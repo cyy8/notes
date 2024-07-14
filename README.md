@@ -1,0 +1,2 @@
+# notes
+Linux learning notes
