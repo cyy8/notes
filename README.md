@@ -2,6 +2,12 @@
 Linux learning notes
 
 
+
+
+
+
+
+
 # 20240714  Learn Linux
 
 * git status
@@ -9,3 +15,7 @@ Linux learning notes
 * git add .
 * git commit -m "my first commit"
 * git push
+
+
+
+day 1 practice git
