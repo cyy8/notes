@@ -25,7 +25,7 @@ You will be able to:
 2. I play the guitar but I am just an aficionado.
 - an aficionado, you are not professional, you may be humble
 3. I play the guitar for fun.
-4. I play the guitar, but I am just an amateu.
+4. I play the guitar, but I am just an amateur.
 ## How often you do it
 ### often
 1. I often paint.
@@ -33,7 +33,7 @@ You will be able to:
 3. I frequently paint.
 4. I paint whenever I can.
 5. I paint as often as I can.
-6. I paint whenever as I get a chance.
+6. I paint whenever I get a chance.
 ### not often
 1. I don't paint as much as I would like.
 2. I don't get round to painting as much as I would like.
@@ -44,7 +44,7 @@ You will be able to:
 - I recently took up painting. (to take up a hobby= to start a hobby)
 - I am new to it.
 2. simple past
-- I started painting few yeas ago.
+- I started painting a few yeas ago.
 - I decided to have a go at painting. (to have a go at sth = to try something new)
 - I decied to try my hand at painting. (also to try something new) 
 ### present perfect
