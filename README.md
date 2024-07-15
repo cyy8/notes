@@ -5,8 +5,8 @@ https://github.com/cyy8/notes
 
 
 
-# 20240715 尚硅谷 P24 Linux实操篇 实用指令
-- pwd 显示当前工作目录的绝对路径
+# 20240715  Linux实操篇 实用指令
+- P24 pwd 显示当前工作目录的绝对路径
 - ls -a 显示当前目录所有的文件和目录，包括隐藏的
   -l 列表形式显示
   -al 显示隐藏文件
@@ -26,6 +26,31 @@ rm 删除 rmdir删除空目录 rm -r 删除目录（非空目录）
 - P27 rm指令 -r 递归删除整个文件夹； -rf删除目录
 mv指令 移动或重命名 重命名：
     mv oldNamefile newNamefile 移动 #移动没搞懂 解答 ../上级目录，./同级目录
+
+
+# pbpaste and pipe
+```
+# This will copy all the content within a file.
+$ cat myfile.txt | pbcopy
+# This will output the contents of your clipboard.
+$ pbpaste
+```
+
+| called pipe 从前到后
+
+pbpaste | grep xxx
+
+grep xxx -r .
+
+ctrl + v  stop 
+
+# open from Terminal 
+
+```
+cd g/notes
+code .
+```
+
 
 
 # 20240714  Learn Linux
