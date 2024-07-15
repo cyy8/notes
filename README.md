@@ -55,11 +55,8 @@ code .
 
 # 20240714  Learn Linux
 
-* git status
-* git diff
-* git add .
-* git commit -m "my first commit"
-* git push
+git status; git add .; git commit -m "$( date "+%Y-%m-%d %T")"; git push
+
 
 command+j open terminal
 
