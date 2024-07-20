@@ -6,7 +6,7 @@ https://github.com/cyy8/notes
 
 # 20240720 Linux 系统命令及Shell脚本实践指南
 - 生成某个文件并添加特定内容 echo
-```
+```bash
 # 重定向 > 添加并覆盖原有； 追加 >> 最后添加
 ehco ABCD > abc.txt 
 cyy@mac g % echo The cat\'s > tomAndJerry.txt 
@@ -22,7 +22,7 @@ The
 ```
 
 grep
-```
+```bash
 #创建一个文本文件
 cyy@mac g % cat tomAndJerry.txt
 The cat's name is Tom,what's the mouse's name? 
@@ -71,7 +71,7 @@ The mouse's NAME is Jerry
 ```
 
 sort
-```
+```bash
 #创建文件
 cyy@mac g % echo b:3 \\nc:2 \\na:4 \\ne:5 \\nd:1 \\nf:11 > sort.txt
 cyy@mac g % cat sort.txt
@@ -83,7 +83,7 @@ d:1
 f:11
 ```
 各种参数
-```
+```bash
 #采取数字排序
 cyy@mac g % sort -n sort.txt
 a:4 
@@ -128,7 +128,7 @@ f:11
 ```
 
 uniq
-```
+```bash
 #创建文件,除先touch创建txt再ehco编辑内容外，还可以code ➕ 文件名 ➕回车，然后编辑器内编辑内容
 abc
 123
@@ -161,7 +161,7 @@ cyy@mac g % cat uniq.txt | sort | uniq -c
 
 cut截取文本，处理的对象是“一行”
 
-```
+```bash
 创建文件 找出示例文件的前5行
 cyy@mac g % cat /etc/passwd | grep ':'| head -n 5  
 nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false
@@ -171,7 +171,7 @@ _uucp:*:4:4:Unix to Unix Copy Protocol:/var/spool/uucp:/usr/sbin/uucico
 _taskgated:*:13:13:Task Gate Daemon:/var/empty:/usr/bin/false
 ```
 
-```
+```bash
 # -f\n -d'\m' 以m为换行符，输出第n列的内容
 cyy@mac g % cat cut.txt |cut -f1 -d':'
 nobody
@@ -199,7 +199,7 @@ _taskgated
 ```
 
 tr 文本替换
-```
+```bash
 # 把所有小写字母转换为大写字母
 cyy@mac g % cat cut.txt |tr '[a-z]' '[A-Z]'
 NOBODY:*:-2:-2:UNPRIVILEGED USER:/VAR/EMPTY:/USR/BIN/FALSE
@@ -243,7 +243,7 @@ cyy@mac g % echo aa,b,,b,,,cc,,,,,,dd | tr  -d '[a-z]'
 
 paste 文本合并
 
-```
+```bash
 # 创建a.txt b.txt并合并
 cyy@mac g % cat a.txt
 1
@@ -277,14 +277,14 @@ c53
 ```
 sed 
 创建文件
-```
+```bash
 this is line1,this is First line
 this is line 2,the Second line,Empty line followed
 this is line 4,this is Third line
 this is line 5, this is Fifth line
 ```
 
-```
+```bash
 #sed 删除指定行（不修改源文件）
 删除第二行
 cyy@mac g % sed '2d' sed.txt
@@ -328,14 +328,14 @@ this is LINE 5, this is Fifth line%
 awk 基于列的文本处理工具（与sed相对，sed是基于行的文本处理工具）
 
 创建文本
-```
+```bash
 john.wang   Male    30  021-11111111
 lucy.wang   Female  25  021-22222222
 jack.wang   Male    35  021-33333333
 lily.wang   Female  20  021-44444444
 ```
 
-```
+```bash
 #打印指定域 
 cyy@mac g % awk '{print $4,$3,$2,$2,$1}' awk.txt #调整列序和数量
 021-11111111 30 Male Male john.wang
@@ -376,7 +376,7 @@ cyy@mac g % awk '{print $(NF-1)}' awk.txt  #输出倒数第二列，NF-1
 ```
 
 ## 练习题 1
-```
+```bash
 原文：网页复制后pbpaste自动粘贴内容
 cyy@mac g % pbpaste
 14.1.3 实践磁盘配额流程-1：文件系统的支持与查看 469
@@ -406,7 +406,7 @@ project的限制（针对目录限制）
 ```
 ## 练习题 2 
 复制网站源码以后提取网站- 先把双引号替换成换行、读取http（https）、确定分隔符➕截取对应列
-```
+```bash
 cyy@mac ~ % pbpaste |tr '"' '\n' |grep http | grep https|cut -f1-3 -d'/'
 https://pagead2.googlesyndication.com
 https://schema.org
@@ -414,7 +414,7 @@ https://static.book345.com
 ```
 
 ## head 和 tail 查看文件的开头或结尾几行
-```
+```bash
 cyy@mac g % head -n2 sed.txt
 this is line1,this is First line
 this is line 2,the Second line,Empty line followed
