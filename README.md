@@ -3,6 +3,151 @@ Linux learning notes
 
 https://github.com/cyy8/notes
 
+# 20240722 Linux Shell脚本学习
+## 简单脚本的创建和执行 第一个shell脚本：输出 hello world
+1. 创建文件：cyy@mac notes % code HelloWorld.sh
+Shell脚本永远以“#!”开头，这是一个脚本开始的标记，表示系统执行这个文件需要使用某个解释器（常见的解释器有sh、bash），后面的/bin/bash指明了解释器的具体位置
+```bash
+cyy@mac notes % cat HelloWorld.sh
+#!/bin/bash   
+#This line is a comment
+echo "Hello World"
+```
+2. 运行脚本：
+第一种: bash + 脚本
+```bash
+cyy@mac notes % bash HelloWorld.sh 
+Hello World
+```
+第二种：添加可执行权限（chmod +x ➕脚本），然后使用“./”运行
+```bash
+cyy@mac notes % ./HelloWorld.sh
+zsh: permission denied: ./HelloWorld.sh
+cyy@mac notes % chmod +x HelloWorld.sh 
+cyy@mac notes % ./HelloWorld.sh 
+Hello World
+```
+
+## if 语句
+if➕空格 [空格 "……" 空格];空格 then
+```bash
+#!/bin/bash
+SCORE=70
+if [ "$SCORE" -lt 60 ]; then
+echo "C"
+fi
+```
+if/esle语句
+```bash
+#!/bin/bash
+SCORE=70
+if [ "$SCORE" -lt 60 ]; then
+echo "C"
+else
+echo "B"
+fi
+```
+
+## for循环
+基础版
+```bash
+#!/bin/bash
+for i in a b c d 1 2 3
+do 
+    echo $i
+done
+```
+
+加if/else版
+```bash
+for i in 50 60 70
+do 
+    echo $i
+    if [ "$i" -lt 60 ]; then
+        echo "C"
+    else
+        echo "B"
+    fi
+done
+```
+
+seq,输出序列
+```bash
+cyy@mac notes % seq 3
+1
+2
+3
+```
+用for打印1～10
+
+```bash
+for i in $(seq 10)
+do 
+    echo $i
+done
+```
+
+“$(命令)”表示获取该命令的结果 to get the result of the command
+```bash
+cyy@mac notes % for i in $(ls)
+do
+    echo $i
+done
+0720-tmp-files
+HelloWorld.sh
+IELTS.md
+README.md
+learnfor.sh
+learnif.sh
+test2.md
+```
+
+## while循环 按行读取文件 常用于处理格式化数据
+两种读取文件的方式：
+第一种 done后接重定向
+```bash
+#! /bin/bash
+while read line
+do 
+    echo $line | wc -c
+    echo
+done < learnif.sh
+```
+第二种 while前用cat+管道
+```bash
+cat learnif.sh | while read line
+do 
+    echo $line | wc -c
+    echo
+done 
+```
+
+
+wc表示统计文件的行数（-l）、单词数（-c）和大小
+```bash
+cyy@mac notes % wc quiz.sh   
+       5       9      48 quiz.sh
+cyy@mac notes % wc -l quiz.sh
+       5 quiz.sh
+```
+
+
+## 练习题
+输出当前目录下的文件及行数（ls、echo、wc -l），改变输出的列序，一、二列互换并➕逗号隔开（awk），输出结果按第二列倒序排列（sort）
+```bash
+for i in $(ls)
+do
+    echo $i 
+    wc -l $i | awk '{print $2","$1}'
+done  | sort -r -t "," -k 2 -n
+```
+
+
+
+
+
+
+
 
 # 20240720 Linux 系统命令及Shell脚本实践指南
 - 生成某个文件并添加特定内容 echo

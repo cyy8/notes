@@ -1,0 +1,12 @@
+nobody:*:-2:-2:Unprivileged User:/var/empty:/usr/bin/false
+root:*:0:0:System Administrator:/var/root:/bin/sh
+daemon:*:1:1:System Services:/var/root:/usr/bin/false
+_uucp:*:4:4:Unix to Unix Copy Protocol:/var/spool/uucp:/usr/sbin/uucico
+_taskgated:*:13:13:Task Gate Daemon:/var/empty:/usr/bin/falsethis is line1,this is First line
+this is line 2,the Second line,Empty line followed
+this is line 4,this is Third line
+this is line 5, this is Fifth line
+this is line1,this is First line
+this is line 2,the Second line,Empty line followed
+this is line 4,this is Third line
+this is line 5, this is Fifth line
