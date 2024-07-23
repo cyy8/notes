@@ -246,8 +246,151 @@ cyy@mac notes % echo $var
 ```
 
 ## 通配符
+通配符用于模式匹配，常见的通配符有*、？和[]括起来的字符序列。其中：
+*代表任意长度的字符串，但不包括点号和斜线号，也就是a*无法匹配abc.txt。
+？可用于匹配任何一个单一字符。
+[]代表匹配其中的任意一个字符，如[abc]表示可以匹配a或者b或者c；[]中可以用 - 表明起止，如[a-c]等同于[abc]
+但注意， - 在[]外只是一个普通字符，没有任何特殊作用；*和？在[]中则变成了普通字符，没有通配的功效
+
+大括号：匹配多个排列组合的可能
+```bash
+cyy@mac notes % echo {x1,x2}{y1,y2}
+x1y1 x1y2 x2y1 x2y2
+```
+
+## 测试
+$?:判断文件是否存在
+```bash
+cyy@mac notes % ls /Users/cyy/g/notes
+0720-tmp-files  IELTS.md        learnfor.sh     learnwhile.sh   test2.md
+HelloWorld.sh   README.md       learnif.sh      quiz.sh
+cyy@mac notes % ls /Users/cyy/g/notes/test2.md
+/Users/cyy/g/notes/test2.md
+cyy@mac notes % echo $?
+0
+
+cyy@mac notes % ls /Users/cyy/g/notes/test5.md
+ls: /Users/cyy/g/notes/test5.md: No such file or directory
+cyy@mac notes % echo $?                       
+1
+
+#输出结果为0，说明存在；输出结果非0，说明不存在。或者用 [ expression ]测试，见下
 
 
+测试结构
+中括号内，表达式前后都有空格，需注意
+[ expression ]
+```bash
+cyy@mac notes % [ -e /Users/cyy/g/notes/test2.md ]
+cyy@mac notes % echo $?
+0
+
+cyy@mac notes % [ -e /Users/cyy/g/notes/test5.md ]
+cyy@mac notes % echo $?                           
+1
+```
+
+## if语句
+```bash
+#! /bin/bash
+echo -n "Please input a score"
+read SCORE
+if [ "$SCORE" -lt 60 ]; then
+    echo "C"
+fi
+if [ "$SCORE" -lt 80 -a "$SCORE" -ge 60 ]; then     
+    echo "B"
+fi
+if [ "$SCORE" -ge 80 ]; then
+    echo "A"
+fi
+```
+#！expression （逻辑测试）表示如果expression为真，则测试结果为假
+#expression 1 -a expression 2 （逻辑测试）表示expression 1和2同时为真，则测试结果为真 （逻辑运算：&&）
+#expression 1 -o expression 2 （逻辑测试）表示expression 1和2只要有1个为真，则测试结果为真（逻辑运算：||）
+
+#-eq 等于；
+#-gt great than 大于 
+#-lt less than 小于
+#-ge great equal 大于等于
+#-le less equal 小于等于
+#-ne not equal 不等于
+
+
+### if/else语句 判断文件是否存在
+```bash
+#! /bin/bash
+FILE=/Users/cyy/g/notes/test2.md
+if [ -e $FILE ];then
+    echo "$FILE exists"
+else
+    echo "$FILE not exists"
+fi
+```
+
+### if/elif
+```bash
+#! /bin/bash
+echo -n "Please input a score"
+read SCORE
+if [ "$SCORE" -lt 60 ]; then
+    echo "C"
+elif [ "$SCORE" -lt 80 -a "$SCORE" -ge 60 ]; then
+    echo "B"
+else 
+    echo "A"
+fi
+```
+
+## for循环
+```bash
+#! /bin/bash
+for FRUIT in apple orange banana pear
+do
+    echo "$FRUIT is John's favorite"
+done
+echo "No more fruits"
+
+#优化版：将列表定义到一个变量中，以后有任何修改只需要修改该变量即可
+fruits="apple orange banana pear"
+for FRUIT in ${fruits}
+do
+    echo "$FRUIT is John's favorite"
+done
+echo "No more fruits"
+```
+### 列表是数字时，shell提供了用于计数的方式，1到5可以用{1..5}表示：
+```bash
+#! /bash/bin
+for VAR in {1..5}
+do
+    echo "Loop $VAR times"
+done
+```
+
+### 结合seq命令针求和
+1-100求和
+```bash
+#! /bin/bash
+sum=0
+for VAR in `seq 1 100`
+#for VAR in $(seq 1 100)   用$()替换``
+do
+    let "sum+=VAR"     #啥意思
+done
+echo "Total: $sum"
+```
+求1-100奇数的和
+```bash
+#! /bin/bash
+sum=0
+for VAR in `seq 1 2 100`   #(三个数：首数、增量、尾数)
+#for VAR in $(seq 1 2 100)   用$()替换``
+do
+    let "sum+=VAR"    
+done
+echo "Total: $sum"
+```
 
 
 
