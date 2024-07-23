@@ -3,6 +3,258 @@ Linux learning notes
 
 https://github.com/cyy8/notes
 
+# 20240723 Linux 脚本学习（自学版）
+## 变量：
+变量命名：Shell中的变量必须以字母或下划线开头，后面可以跟数字、字母或下划线，变量长度没有限制。但要注意以下两类错误类型：
+a. PS1 #变量不能和Shell的预设变量名重名  
+b. for #变量不能使用Shell的关键字
+
+## 定义变量：变量名=变量值
+#注意1: 变量名和变量值之间用等号紧紧相连，之间没有任何空格；变量值也可以加引号（单双都可以）
+```bash
+cyy@mac notes %  name=john
+cyy@mac notes % name = john
+zsh: command not found: name
+cyy@mac notes % name= jonh
+zsh: command not found: jonh
+
+cyy@mac notes % name='john'
+cyy@mac notes % name="john"
+```
+#注意2: 变量值如果有空格，必须加引号，否则会报错
+```bash
+cyy@mac notes % name=john wang
+zsh: command not found: wang
+
+cyy@mac notes % name='john wang'
+```
+
+变量的取值：变量名前加上$符号，严谨一点的写法是 ${} 
+```bash
+cyy@mac notes % echo $name
+john wang
+cyy@mac notes % echo ${name}
+john wang
+```
+#区分以下两种赋值：若要打印“sue Hello”，变量需按标准格式➕{},如果没有，Shell语法自动将等号后的内容解释为变量（sue Hello），又因“sue Hello”并未声明，所以值为空
+```bash
+cyy@mac notes % name='sue '
+cyy@mac notes % echo $nameHello
+
+cyy@mac notes % echo ${name}Hello
+sue Hello
+```
+##由以上可知，Shell具有“弱变量性”，即在没有预先声明变量的时候也可以引用，且没有任何报错或者提醒，可能会造成脚本中引用不正确的变量，从而导致脚本异常但很难找出原因。在这种情况下，可以设置脚本运行时必须遵循“先声明再使用”的原则，这样一旦脚本中出现未声明的变量情况则会立刻报错：
+```bash
+cyy@mac notes % shopt -s -o nounset
+zsh: command not found: shopt   ##问题
+```
+
+取消变量：unset
+```bash
+cyy@mac notes % name=john
+cyy@mac notes % echo $name
+john
+cyy@mac notes % unset name
+cyy@mac notes % echo $name
+```
+
+## 数组（Array）
+定义数组：用declare定义数组Array, 第一个元素赋值为0，第二个为1，第三个元素：一个字符串 ##问题
+
+数组可以在创建的同时赋值,增加/替换 ## 跟书上不一样呢？
+```bash
+cyy@mac notes % declare Score=('50' '70' '90')
+cyy@mac notes % Score[2]='60'
+cyy@mac notes % declare Score
+Score=( 50 60 90 )
+cyy@mac notes % declare Score=('50' '90')     
+cyy@mac notes % Score[3]='100'
+cyy@mac notes % declare Score            
+Score=( 50 90 100 )
+cyy@mac notes % Score[3]=('100' '120')
+cyy@mac notes % declare Score         
+Score=( 50 90 100 120 )
+cyy@mac notes % Score[1]=('30' '40')  
+cyy@mac notes % declare Score       
+Score=( 30 40 90 100 120 )
+```
+
+
+## 引用
+Shell中共有4种引用符，分别是双引号（部分引用或弱引用）、单引号（全引用或强引用）、反引号（将括起的内容解释为系统命令）、转义符（\）
+
+部分引用：$、反引号（`）、转义符（\）依然会被解析为特殊意义
+声明变量VARO3，第一次直接打印，第二次加双引号，输出没有区别
+```bash
+cyy@mac notes % VAR03=100
+cyy@mac notes % echo $VAR03
+100
+cyy@mac notes % echo "$VAR03"
+100
+```
+声明变量VAR04，加双引号与否，输出也没区别(与书上讲的不同)
+```bash
+cyy@mac notes % VAR04="A        B        C"
+cyy@mac notes % echo "$VAR04"              
+A        B        C
+cyy@mac notes % echo $VAR04                
+A        B        C
+```
+
+全引用：单引号中的任何字符都只当作是普通字符（除单引号本身，即单引号中间无法再单独包含单引号，用转义符也不可）。单引号中的字符只能代表其作为字符的字面意义：
+```bash
+cyy@mac notes % echo "$VAR03"
+100
+cyy@mac notes % echo '$VAR03'
+$VAR03
+```
+如果全引用括起的字符串含有单引号，则会出现问题，需加转义符，或变单引号为双引号：
+```bash
+cyy@mac notes % echo 'It's a dog'   
+quote> echo "It's a dog"     #quote啥意思
+```
+
+## 命令替换：1. `命令` 2. $(命令)
+```bash
+cyy@mac notes % DATE_01=`date`
+cyy@mac notes % DATE_02=$(date)
+cyy@mac notes % echo $ DATE_01  # $与命令间没有空格
+$ DATE_01
+cyy@mac notes % echo $DATE_01 
+2024年 7月23日 星期二 13时47分47秒 CST
+cyy@mac notes % echo $DATE_02
+2024年 7月23日 星期二 13时48分03秒 CST
+```
+
+反引号可与 $() 等价，因反引号与单引号看起来类似，时常对差看代码造成困难，所以使用 $() 就相对清晰：
+```bash
+cyy@mac notes % LS=`ls -l`
+cyy@mac notes % echo $LS
+total 96
+drwxr-xr-x  12 cyy  staff    384  7 20 23:19 0720-tmp-files
+-rwxr-xr-x   1 cyy  staff     56  7 22 22:06 HelloWorld.sh
+-rw-r--r--   1 cyy  staff   2498  7 17 13:42 IELTS.md
+
+cyy@mac notes % LS=$(ls -l)
+cyy@mac notes % echo $LS
+total 96
+drwxr-xr-x  12 cyy  staff    384  7 20 23:19 0720-tmp-files
+-rwxr-xr-x   1 cyy  staff     56  7 22 22:06 HelloWorld.sh
+-rw-r--r--   1 cyy  staff   2498  7 17 13:42 IELTS.md
+```
+另外，$() 支持嵌套，而反引号不行；$() 仅可在Bash Shell中有效，而反引号可在多种UNIX SHELL中使用。所以各有特点，选哪个看需要和个人喜好
+
+## 运算符
+算术运算符
+```bash
+cyy@mac notes % let I=2+2    #work
+cyy@mac notes % echo $I
+4
+cyy@mac notes % let I=15/7  #work
+cyy@mac notes % echo $I
+2
+cyy@mac notes % I=2+2       #work
+cyy@mac notes % echo $I
+4
+cyy@mac notes % I=15/7      #work
+cyy@mac notes % echo $I
+2
+cyy@mac notes % echo "$10%3"    #test
+%3
+cyy@mac notes % echo $10%3      #test
+%3
+cyy@mac notes % L=10%3          #not work
+cyy@mac notes % echo $L
+10%3
+cyy@mac notes % echo "$L"       #not work
+10%3
+cyy@mac notes % let L=10%3      #work
+cyy@mac notes % echo $L
+1
+cyy@mac notes % A=2*3           #test
+cyy@mac notes % echo $A
+2*3
+cyy@mac notes % echo "$A"
+2*3
+cyy@mac notes % let A=2*3       #not work
+zsh: no matches found: A=2*3
+cyy@mac notes % let B=2*3
+zsh: no matches found: B=2*3
+```
+
+位元算符存疑
+
+
+使用$[]做运算：$[] 与 $(()) 类似，可用于简单的算术运算：
+```bash
+cyy@mac notes % echo $[1+1]
+2
+cyy@mac notes % echo $[2*2]
+4
+cyy@mac notes % echo $[5**2]
+25
+```
+使用expr做运算：expr也可用于整数运算。与其他算数运算不同，expr要求操作数和操作符之间使用空格隔开（否则只会打印出字符串），所以特殊的操作符要使用转义符转义（如*）。
+expr支持加减乘除余等：
+```bash
+cyy@mac notes % expr 1+1
+1+1
+cyy@mac notes % expr 1 + 1
+2
+cyy@mac notes % expr 2 * 2
+expr: syntax error
+cyy@mac notes % expr 2 \* 2
+4
+```
+
+内建运算命令 declare
+declare是shell的内建命令，通过它也能进行整数运算，但使用declare显示定义整数变量（-i 参数指定变量为“整数”），再进行赋值。如不定义，赋值“1+1”便是简单的字符串，与“1+1”无异：
+```bash
+#不用declare定义变量
+cyy@mac notes % S=1+1
+cyy@mac notes % echo $S
+1+1
+#用declare定义变量
+cyy@mac notes % declare -i J
+cyy@mac notes % J=1+1
+cyy@mac notes % echo $J
+2
+
+#注意，Shell中的算术运算要求 运算符和操作数之间不能有空格；特殊符号也不需要转义；算术表达式中含有其他变量也不需要用$引用。
+```
+
+算术扩展：shell内建命令之一，整数变量的运算机制，基本语法：
+$((算术表达式))
+其中，算术表达式由变量和运算符组成，常见的用法是显示输出和变量赋值。若表达式中的变量没有定义，则计算时，其值会被假设为0（但不会真的因此赋0值给该变量）：
+```bash
+cyy@mac notes % i=2
+cyy@mac notes % echo $((2*i+1))
+5
+cyy@mac notes % echo $((2*(i+1)))   #用括号改变运算优先级
+6
+
+#变量赋值
+cyy@mac notes % var=$((2*i+1))
+cyy@mac notes % echo $var
+5
+
+#未定义的变量参与算术表达式求值 （默认为0）
+cyy@mac notes % var=$((2*j+1))   
+cyy@mac notes % echo $var
+1
+```
+
+## 通配符
+
+
+
+
+
+
+
+
+
 # 20240722 Linux Shell脚本学习
 ## 简单脚本的创建和执行 第一个shell脚本：输出 hello world
 1. 创建文件：cyy@mac notes % code HelloWorld.sh
