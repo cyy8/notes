@@ -3,6 +3,584 @@ Linux learning notes
 
 https://github.com/cyy8/notes
 
+
+
+sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
+
+cyy@192 ~ % bash
+The default interactive shell is now zsh.
+To update your account to use zsh, please run `chsh -s /bin/zsh`.
+For more details, please visit https://support.apple.com/kb/HT208050.
+bash-3.2$ VAR04="A        B        C"
+bash-3.2$ echo $VAR04
+A B C
+bash-3.2$ echo $SHELL
+/bin/zsh
+
+# 20240724 《UNIX/LINUX/OS X中的Shell编程》 人民邮电出版社 开始学习
+## Chapter 1 基础概述
+### date命令：显示日期和时间
+```bash
+➜  ~ date
+2024年 7月24日 星期三 15时33分35秒 CST
+```
+### who命令：找出已登录人员
+```bash
+➜  ~ who
+cyy              console       7  3 22:17 
+
+#也可以获取本人信息
+➜  ~ who am i
+cyy                            7 24 15:35 
+```
+### echo命令：回显字符
+echo命令会在终端打印出（或者回显）在行中输入的所有内容
+```bash
+➜  ~ echo this is a test
+this is a test
+➜  ~ echo why not print out a longer line with echo? 
+zsh: no matches found: echo?
+➜  ~ echo "why not print out a longer line with echo?"
+why not print out a longer line with echo?
+➜  ~ echo one    two      three four
+one two three four
+```
+### ls命令：查看目录下的文件
+### cat命令：检查文件内容 concatenate
+```bash
+➜  notes git:(main) ✗ cat forlist.sh
+#! /bash/bin
+for VAR in {1..5}
+do
+    echo "Loop $VAR times"
+done%  
+```
+### wc命令：统计文件中单词数量
+wc命令可以获得文件中的行数、单词数和字符数
+```bash
+➜  g cat ls_usr.txt
+total 8
+-rw-r--r--   1 cyy  staff    0  7 24 12:52 ls_usr.txt
+drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
+-rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
+➜  g wc ls_usr.txt
+       4      29     163 ls_usr.txt
+```
+### 命令选项 -，后面直接跟字母
+如要计算文件中包含的行数，可以用“wc -l”; 字符数可以用 -c选项；单词数 -w选项
+```bash
+➜  g wc -l ls_usr.txt  #-l选项 行数
+       4 ls_usr.txt
+➜  g wc -c ls_usr.txt  #-c选项 字符数
+     163 ls_usr.txt
+➜  g wc -w ls_usr.txt  #-w选项 单词数
+      29 ls_usr.txt
+```
+
+### cp命令：复制文件
+```bash
+cp names saved_names  #names表示源文件，saved_names表示目标文件
+```
+```bash
+➜  g ls
+ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.txt uniq.txt
+➜  g cp sort.txt sortcp.txt
+➜  g ls
+ls_no_usr.txt notes         sort.txt      testhello.txt
+ls_usr.txt    sayHello.sh   sortcp.txt    uniq.txt
+```
+### mv命令：文件重命名/移动
+重命名
+```bash
+mv old_name new_name
+```
+```bash
+➜  g ls
+ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.txt uniq.txt
+➜  g mv sort.txt sortmv.txt
+➜  g ls
+ls_no_usr.txt notes         sortcp.txt    testhello.txt
+ls_usr.txt    sayHello.sh   sortmv.txt    uniq.txt
+```
+
+移动
+mv oldNamefile newNamefile 移动 #移动没搞懂 解答 ../上级目录，./同级目录
+```bash
+➜  g mv sortmv.txt ./notes
+➜  g ls
+ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   testhello.txt uniq.txt
+➜  g cd notes
+➜  notes git:(main) ✗ ls
+0720-tmp-files   elifscore.sh     ifcheckfile.sh   learnwhile.sh    test2.md         while03.sh
+HelloWorld.sh    forlist.sh       ifscore.sh       quiz.sh          until01.sh
+IELTS.md         forlist03.sh     learnfor.sh      sortmv.txt       while01.sh
+README.md        fruit01.sh       learnif.sh       student_info.txt while02.sh
+```
+
+### rm命令：删除文件
+```bash
+rm names
+```
+rm也可以一次性删除多个文件，空格隔开即可
+
+### mkdir命令：创建目录
+### 目录之间复制(cp)、移动（mv）文件
+```bash
+cp oldd/name1 newd/name2 
+#同级目录格式
+
+#因为在不同目录中，名字可以相同，此时可以仅指定目录：
+cp oldd/name1 newd
+```
+### ln命令：文件链接
+创建链接，可以克服cp 占2倍磁盘空间、只改了一处另一处忘记改的风险问题
+```bash
+➜  g2 ls
+456       789       899       mv202.doc
+➜  g2 ln mv202.doc mv203.doc
+➜  g2 ls
+456       789       899       mv202.doc mv203.doc
+➜  g2 cat mv202.doc
+➜  g2 code mv202.doc
+➜  g2 cat mv202.doc 
+test  ln %                                                                                                 
+➜  g2 cat mv203.doc
+test  ln %
+#执行ls命令时，会显示两个独立的文件
+➜  g2 ls -l          
+total 16
+drwxr-xr-x  2 cyy  staff  64  7 20 14:48 456
+drwxr-xr-x  3 cyy  staff  96  7 20 14:49 789
+drwxr-xr-x  3 cyy  staff  96  7 20 14:53 899
+-rw-r--r--  2 cyy  staff  42  7 24 16:40 mv202.doc
+-rw-r--r--  2 cyy  staff  42  7 24 16:40 mv203.doc
+-rw-r--r--  1 cyy  staff   0  7 24 16:42 test2.txt
+#第二列显示2，表示文件的连接数，没有链接的非目录文件显示1（test2.txt）
+#两个链接文件可以任意删一个，另一个不会随之消失，删除后第2列会显示1
+```
+
+### rmdir命令：删除目录 有危险不用
+### 文件名替换 星号 *
+星号可以匹配当前目录下 所有 的文件名
+```bash
+#如果用cat，则会显示所有的文件内容
+➜  star cat *
+chapt 1 content testcontent test2content test3content4%
+#如果用echo，则会显示当前目录下的所有文件
+➜  star echo *
+chapt1 chapt2 chapt3 chapt4
+#也可以只显示出以chapt开头的文件内容和文件：
+➜  star cat chapt*
+chapt 1 content testcontent test2content test3content4%                                                    
+➜  star echo chapt*
+chapt1 chapt2 chapt3 chapt4
+#不仅限于最后一个文件名，可以是文件名的任意位置
+➜  star echo ch*pt1
+chapt1
+```
+### 匹配单个字符
+星号：可以匹配0个或多个字符，也就是x*，可以匹配文件x、x1、xabc
+问号：仅能匹配单个字符
+```bash
+star02 ls
+➜  star02 touch a aa aax alice b bb c cc report1 report2 report3
+➜  star02 ls
+a       aa      aax     alice   b       bb      c       cc      report1 report2 report3
+➜  star02 echo ? 
+a b c
+➜  star02 echo ??
+aa bb cc
+➜  star02 echo a?
+aa
+➜  star02 echo ?*
+a aa aax alice b bb c cc report1 report2 report3
+➜  star02 echo ???*
+aax alice report1 report2 report3
+```
+
+除问号，另一种匹配单个字符的方式：中括号给出待匹配的字符列表
+```bash
+➜  star02 echo [br]*   #匹配以b或r开头的所有文件
+b bb report1 report2 report3
+
+➜  star02 echo *[0-9] #匹配以数字结尾的所有文件
+report1 report2 report3
+
+➜  star02 echo [!br]* #匹配非b或r开头的文件，不work
+zsh: event not found: br]
+```
+### 空格问题
+如果文件名中有空格，直接cat+文件名会报错，2种解决方式：
+```bash
+➜  star02 cat my test document 
+cat: my: No such file or directory
+cat: test: No such file or directory
+cat: document: No such file or directory
+➜  star02 cat my\ test\ document   #将空格转义
+➜  star02 cat "my test document"   #文件名加引号，单双都可以
+➜  star02 cat 'my test document'
+```
+### 标准输入
+sort 排序不work  #待修正
+
+
+
+
+
+
+
+
+# 20240724 Linux 脚本学习（自学版）
+## while循环
+结构
+```bash
+while expression
+do
+    command
+done
+```
+
+已知循环次数，可以用计数的方式控制循环，即设定一个计数器，在达到规定的循环次数后退出循环：
+```bash
+#! /bin/bash
+CONTER=5   #定义计数器，循环次数为5
+while [[ $CONTER -gt 0 ]]  #测试CONTER大于0的情况下继续循环，注意两个中括号之间无空格，里面的中括号与expression之间有空格
+do
+    echo -n "$CONTER"
+    let "CONTER-=1" #每次循环，CONTER=CONTER-1
+done
+echo
+```
+
+用while循环计算1-100之和、1-100奇数之和
+```bash
+#! /bash/bin
+#sum01计算1-100的和
+#sum02计算1-100奇数的和
+sum01=0
+sum02=0
+i=1
+j=1
+while [[ "$i" -le "100" ]]
+do
+    let "sum01+=i"
+    let "j=i%2"     #变量j用来确定变量i的奇偶行，如果是奇数则余为1
+    if [[ $j -ne 0 ]]; then #j不等于0，则表示只取奇数
+        let "sum02+=i"
+    fi
+    let "i+=1"  #一次次循环
+done
+echo "sum01=$sum01"
+echo "sum02=$sum02"
+```
+
+用while做猜数字游戏，只有输入的数字和预设数字一致时，才会停止循环：
+```bash
+#! /bin/bash
+PRE_SET_NUM=8
+echo "Input a number between 1 and 10"
+while  read GUESS
+do
+    if [[ "$GUESS" -eq "$PRE_SET_NUM" ]]; then #书上格式有误，引用数据需加双引号，否则会报错
+        echo "You get the right number"
+        exit
+    else
+        echo "Wrong, try again"
+    fi
+done
+```
+
+while 结合 awk 按行读取文件，输出信息，两种方式：
+```bash
+#创建文件
+John 30 Boy
+Sue 28 Girl
+Wang 25 Boy 
+Xu 23 Girl
+```
+第一种(重定向)：
+```bash
+#! /bin/bash
+while  read LINE
+do
+    NAME=`echo $LINE | awk '{print $1}'`
+    AGE=`echo $LINE | awk '{print $2}'`
+    SEX=`echo $LINE | awk '{print $3}'`
+    echo "My name is $NAME, I'm $AGE years old, I'm a $SEX"
+done < student_info.txt
+```
+第二种（管道）：
+```bash
+#! /bin/bash
+cat student_info.txt | while read LINE
+do
+    NAME=`echo $LINE | awk '{print $1}'`
+    AGE=`echo $LINE | awk '{print $2}'`
+    SEX=`echo $LINE | awk '{print $3}'`
+    echo "My name is $NAME, I'm $AGE years old, I'm a $SEX"
+done
+```
+
+## until循环
+until是测试假值的方式（与while相对），直到测试为真时才停止循环，其语法结构与while一致：
+```bash
+until expression
+do
+    command
+done
+```
+
+计算1-100之和、1-100奇数之和：
+```bash
+#! /bash/bin
+#sum01计算1-100的和
+#sum02计算1-100奇数的和
+sum01=0
+sum02=0
+i=1
+j=1
+until [[ "$i" -gt "100" ]] #仅此一行与while语句不同
+do
+    let "sum01+=i"
+    let "j=i%2"     #变量j用来确定变量i的奇偶行，如果是奇数则余为1
+    if [[ $j -ne 0 ]]; then #j不等于0，则表示只取奇数
+        let "sum02+=i"
+    fi
+    let "i+=1"  #一次次循环
+done
+echo "sum01=$sum01"
+echo "sum02=$sum02"
+```
+
+## case 判断结构
+和if/elif/else结构一样，case判断结构也可以用于多种可能情况下的分支选择，其语法结构如下：
+```bash
+case VAR in
+var1) command 1 ;;
+var2) command 2 ;;
+var3) command 3 ;;
+...
+*) command ;;
+esac
+```
+
+## select循环
+程序运行到select语句时，会自动将列表中的所有元素生成为可用1、2、3等数选择的列表，并等待用户输入。用户输入并回车后，select看判断输入并执行后续命令。
+结合case使用，有判断用户输入的功能：
+```bash
+#! /bin/bash
+select FRUIT in apple banana pear
+do
+    case $FRUIT in 
+    apple) echo "I like apple best" ;;
+    banana) echo "I like banana best" ;;
+    pear) echo "I like pear best" ;;
+    *) echo "I don't like these fruit" ;;
+    esac
+done
+
+#运行结果
+➜  ~ bash case.txt
+1) apple
+2) banana
+3) pear
+#? 2
+I like banana best
+#? 3
+I like pear best
+#? 5
+I don't like these fruit
+#? 
+```
+
+## 嵌套循环
+一般不超过3个
+用for和while呈现九九乘法表
+```bash
+#! /bin/bash
+for ((i=1; i<=9; i++))
+do
+    for ((j=1; j<=9; j++))
+    do
+        let "multi=$i*$j"
+        echo -n "$i*$j=$multi"
+    done
+    echo
+done
+
+i=1
+while [[ "$i" -le "9" ]]
+do
+    j=1
+    while [[ "$j" -le "9" ]]
+    do
+        let "multi=$i*$j"
+        echo -n "$i*$j=$multi"
+        let "j+=1"
+    done
+    echo
+    let "i+=1"
+done
+
+#输出结果
+1*1=11*2=21*3=31*4=41*5=51*6=61*7=71*8=81*9=9
+2*1=22*2=42*3=62*4=82*5=102*6=122*7=142*8=162*9=18
+3*1=33*2=63*3=93*4=123*5=153*6=183*7=213*8=243*9=27
+4*1=44*2=84*3=124*4=164*5=204*6=244*7=284*8=324*9=36
+5*1=55*2=105*3=155*4=205*5=255*6=305*7=355*8=405*9=45
+6*1=66*2=126*3=186*4=246*5=306*6=366*7=426*8=486*9=54
+7*1=77*2=147*3=217*4=287*5=357*6=427*7=497*8=567*9=63
+8*1=88*2=168*3=248*4=328*5=408*6=488*7=568*8=648*9=72
+9*1=99*2=189*3=279*4=369*5=459*6=549*7=639*8=729*9=81
+
+```
+
+## 循环控制
+### break语句
+break用于终止当前整个循环体，一般break语句会与if判断语句一起使用，当if条件满足时用break终止循环。
+上述九九乘法表存在问题：有一半时重复的，可以用break优化：
+```bash
+#! /bin/bash
+for ((i=1; i<=9; i++))
+do
+    for ((j=1; j<=9; j++))
+    do
+        if [[ $j -le $i ]];then        #if后有空格，then前面没有空格
+            let "multi=$i*$j"
+            echo -n "$i*$j=$multi"
+        else
+            break    
+        fi
+    done
+    echo
+done
+
+i=1
+while [[ "$i" -le "9" ]]
+do
+    j=1
+    while [[ "$j" -le "9" ]]
+    do
+        if [[ $j -le $i ]];then        #if后有空格，then前面没有空格
+            let "multi=$i*$j"
+            echo -n "$i*$j=$multi"
+            let "j+=1"
+        else
+            break    
+        fi
+    done
+    echo
+    let "i+=1"
+done
+```
+
+## 重定向
+### 标准输出覆盖重定向：> 覆盖
+```bash
+➜  g cat ls_no_usr.txt 
+total 16
+-rw-r--r--   1 cyy  staff    0  7 24 12:56 ls_no_usr.txt
+-rw-r--r--   1 cyy  staff  163  7 24 12:52 ls_usr.txt
+drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
+-rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
+let's see what happens%                                                                                    
+➜  g ls -l /Users/cyy/g> ls_no_usr.txt
+➜  g cat ls_no_usr.txt                
+total 16
+-rw-r--r--   1 cyy  staff    0  7 24 12:57 ls_no_usr.txt
+-rw-r--r--   1 cyy  staff  163  7 24 12:52 ls_usr.txt
+drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
+-rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
+```
+### 标准输出追加定向：>> 追加
+```bash
+➜  g cat ls_no_usr.txt                
+total 16
+-rw-r--r--   1 cyy  staff    0  7 24 12:57 ls_no_usr.txt
+-rw-r--r--   1 cyy  staff  163  7 24 12:52 ls_usr.txt
+drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
+-rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
+➜  g ls -l /Users/cyy/g>> ls_no_usr.txt 
+➜  g cat ls_no_usr.txt                 
+total 16
+-rw-r--r--   1 cyy  staff    0  7 24 12:57 ls_no_usr.txt
+-rw-r--r--   1 cyy  staff  163  7 24 12:52 ls_usr.txt
+drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
+-rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
+>> 标准输出追加定向total 24
+-rw-r--r--   1 cyy  staff  248  7 24 12:59 ls_no_usr.txt
+-rw-r--r--   1 cyy  staff  163  7 24 12:52 ls_usr.txt
+drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
+-rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
+```
+### 标识输出重定向：>& 没看明白
+### 标准输入重定向：<
+标准输入重定向可以将原本应由从标准输入设备中读取的内容转由文件内容舒服，也就是将文件内容写入标准输入中。
+```bash
+➜  g cat   #先输入cat命令
+Hello   #键盘输入Hello，按回车
+Hello   #cat命令读取并输出Hello
+World   #键盘输入World
+World   #cat命令读取并输出World
+[Ctrl+D] 终止输入
+```
+sort 重定向排序  #好像没啥区别？
+```bash
+➜  g sort sort.txt
+carrot
+durian
+eggplant
+orange
+pear
+➜  g sort < sort.txt
+carrot
+durian
+eggplant
+orange
+pear
+```
+
+## 函数
+### 函数定义和调用：
+```bash
+#shell中的函数定义
+#function为关键字，FUNCTION_NAME为函数名
+function FUNCTION_NAME(){
+    command1 #函数体 可以有多个语句，不允许有空格
+    command2
+    …
+}       函数定义结束
+
+#另一种形式，省略关键字 function，效果一致：
+FUNCTION_NAME(){
+       command1 #函数体 可以有多个语句，不允许有空格
+    command2
+    …
+}  
+```
+函数定义和调用示例：
+```bash
+#! /bin/bash
+function sayHello(){        #定义函数say Hello
+    echo "Hello"            #该函数的函数体为打印Hello
+}                           #函数定义结束
+echo "Call function sayHello"   #提示函数调用
+sayHello                        #函数调用
+
+#脚本运行结果
+➜  g bash sayHello.sh
+Call function sayHello
+Hello
+```
+
+
+
+
+
+
+
+
+
 # 20240723 Linux 脚本学习（自学版）
 ## 变量：
 变量命名：Shell中的变量必须以字母或下划线开头，后面可以跟数字、字母或下划线，变量长度没有限制。但要注意以下两类错误类型：
@@ -12,51 +590,51 @@ b. for #变量不能使用Shell的关键字
 ## 定义变量：变量名=变量值
 #注意1: 变量名和变量值之间用等号紧紧相连，之间没有任何空格；变量值也可以加引号（单双都可以）
 ```bash
-cyy@mac notes %  name=john
-cyy@mac notes % name = john
+cyy@mac %  name=john
+cyy@mac % name = john
 zsh: command not found: name
-cyy@mac notes % name= jonh
+cyy@mac % name= jonh
 zsh: command not found: jonh
 
-cyy@mac notes % name='john'
-cyy@mac notes % name="john"
+cyy@mac % name='john'
+cyy@mac % name="john"
 ```
 #注意2: 变量值如果有空格，必须加引号，否则会报错
 ```bash
-cyy@mac notes % name=john wang
+cyy@mac % name=john wang
 zsh: command not found: wang
 
-cyy@mac notes % name='john wang'
+cyy@mac % name='john wang'
 ```
 
 变量的取值：变量名前加上$符号，严谨一点的写法是 ${} 
 ```bash
-cyy@mac notes % echo $name
+cyy@mac % echo $name
 john wang
-cyy@mac notes % echo ${name}
+cyy@mac % echo ${name}
 john wang
 ```
 #区分以下两种赋值：若要打印“sue Hello”，变量需按标准格式➕{},如果没有，Shell语法自动将等号后的内容解释为变量（sue Hello），又因“sue Hello”并未声明，所以值为空
 ```bash
-cyy@mac notes % name='sue '
-cyy@mac notes % echo $nameHello
+cyy@mac % name='sue '
+cyy@mac % echo $nameHello
 
-cyy@mac notes % echo ${name}Hello
+cyy@mac % echo ${name}Hello
 sue Hello
 ```
 ##由以上可知，Shell具有“弱变量性”，即在没有预先声明变量的时候也可以引用，且没有任何报错或者提醒，可能会造成脚本中引用不正确的变量，从而导致脚本异常但很难找出原因。在这种情况下，可以设置脚本运行时必须遵循“先声明再使用”的原则，这样一旦脚本中出现未声明的变量情况则会立刻报错：
 ```bash
-cyy@mac notes % shopt -s -o nounset
+cyy@mac % shopt -s -o nounset
 zsh: command not found: shopt   ##问题
 ```
 
 取消变量：unset
 ```bash
-cyy@mac notes % name=john
-cyy@mac notes % echo $name
+cyy@mac % name=john
+cyy@mac % echo $name
 john
-cyy@mac notes % unset name
-cyy@mac notes % echo $name
+cyy@mac % unset name
+cyy@mac % echo $name
 ```
 
 ## 数组（Array）
@@ -64,19 +642,19 @@ cyy@mac notes % echo $name
 
 数组可以在创建的同时赋值,增加/替换 ## 跟书上不一样呢？
 ```bash
-cyy@mac notes % declare Score=('50' '70' '90')
-cyy@mac notes % Score[2]='60'
-cyy@mac notes % declare Score
+cyy@mac % declare Score=('50' '70' '90')
+cyy@mac % Score[2]='60'
+cyy@mac % declare Score
 Score=( 50 60 90 )
-cyy@mac notes % declare Score=('50' '90')     
-cyy@mac notes % Score[3]='100'
-cyy@mac notes % declare Score            
+cyy@mac % declare Score=('50' '90')     
+cyy@mac % Score[3]='100'
+cyy@mac % declare Score            
 Score=( 50 90 100 )
-cyy@mac notes % Score[3]=('100' '120')
-cyy@mac notes % declare Score         
+cyy@mac % Score[3]=('100' '120')
+cyy@mac % declare Score         
 Score=( 50 90 100 120 )
-cyy@mac notes % Score[1]=('30' '40')  
-cyy@mac notes % declare Score       
+cyy@mac % Score[1]=('30' '40')  
+cyy@mac % declare Score       
 Score=( 30 40 90 100 120 )
 ```
 
@@ -87,57 +665,57 @@ Shell中共有4种引用符，分别是双引号（部分引用或弱引用）�
 部分引用：$、反引号（`）、转义符（\）依然会被解析为特殊意义
 声明变量VARO3，第一次直接打印，第二次加双引号，输出没有区别
 ```bash
-cyy@mac notes % VAR03=100
-cyy@mac notes % echo $VAR03
+cyy@mac % VAR03=100
+cyy@mac % echo $VAR03
 100
-cyy@mac notes % echo "$VAR03"
+cyy@mac % echo "$VAR03"
 100
 ```
 声明变量VAR04，加双引号与否，输出也没区别(与书上讲的不同)
 ```bash
-cyy@mac notes % VAR04="A        B        C"
-cyy@mac notes % echo "$VAR04"              
+cyy@mac % VAR04="A        B        C"
+cyy@mac % echo "$VAR04"              
 A        B        C
-cyy@mac notes % echo $VAR04                
+cyy@mac % echo $VAR04                
 A        B        C
 ```
 
 全引用：单引号中的任何字符都只当作是普通字符（除单引号本身，即单引号中间无法再单独包含单引号，用转义符也不可）。单引号中的字符只能代表其作为字符的字面意义：
 ```bash
-cyy@mac notes % echo "$VAR03"
+cyy@mac % echo "$VAR03"
 100
-cyy@mac notes % echo '$VAR03'
+cyy@mac % echo '$VAR03'
 $VAR03
 ```
 如果全引用括起的字符串含有单引号，则会出现问题，需加转义符，或变单引号为双引号：
 ```bash
-cyy@mac notes % echo 'It's a dog'   
+cyy@mac % echo 'It's a dog'   
 quote> echo "It's a dog"     #quote啥意思
 ```
 
 ## 命令替换：1. `命令` 2. $(命令)
 ```bash
-cyy@mac notes % DATE_01=`date`
-cyy@mac notes % DATE_02=$(date)
-cyy@mac notes % echo $ DATE_01  # $与命令间没有空格
+cyy@mac % DATE_01=`date`
+cyy@mac % DATE_02=$(date)
+cyy@mac % echo $ DATE_01  # $与命令间没有空格
 $ DATE_01
-cyy@mac notes % echo $DATE_01 
+cyy@mac % echo $DATE_01 
 2024年 7月23日 星期二 13时47分47秒 CST
-cyy@mac notes % echo $DATE_02
+cyy@mac % echo $DATE_02
 2024年 7月23日 星期二 13时48分03秒 CST
 ```
 
 反引号可与 $() 等价，因反引号与单引号看起来类似，时常对差看代码造成困难，所以使用 $() 就相对清晰：
 ```bash
-cyy@mac notes % LS=`ls -l`
-cyy@mac notes % echo $LS
+cyy@mac % LS=`ls -l`
+cyy@mac % echo $LS
 total 96
 drwxr-xr-x  12 cyy  staff    384  7 20 23:19 0720-tmp-files
 -rwxr-xr-x   1 cyy  staff     56  7 22 22:06 HelloWorld.sh
 -rw-r--r--   1 cyy  staff   2498  7 17 13:42 IELTS.md
 
-cyy@mac notes % LS=$(ls -l)
-cyy@mac notes % echo $LS
+cyy@mac % LS=$(ls -l)
+cyy@mac % echo $LS
 total 96
 drwxr-xr-x  12 cyy  staff    384  7 20 23:19 0720-tmp-files
 -rwxr-xr-x   1 cyy  staff     56  7 22 22:06 HelloWorld.sh
@@ -148,38 +726,38 @@ drwxr-xr-x  12 cyy  staff    384  7 20 23:19 0720-tmp-files
 ## 运算符
 算术运算符
 ```bash
-cyy@mac notes % let I=2+2    #work
-cyy@mac notes % echo $I
+cyy@mac % let I=2+2    #work
+cyy@mac % echo $I
 4
-cyy@mac notes % let I=15/7  #work
-cyy@mac notes % echo $I
+cyy@mac % let I=15/7  #work
+cyy@mac % echo $I
 2
-cyy@mac notes % I=2+2       #work
-cyy@mac notes % echo $I
+cyy@mac % I=2+2       #work
+cyy@mac % echo $I
 4
-cyy@mac notes % I=15/7      #work
-cyy@mac notes % echo $I
+cyy@mac % I=15/7      #work
+cyy@mac % echo $I
 2
-cyy@mac notes % echo "$10%3"    #test
+cyy@mac % echo "$10%3"    #test
 %3
-cyy@mac notes % echo $10%3      #test
+cyy@mac % echo $10%3      #test
 %3
-cyy@mac notes % L=10%3          #not work
-cyy@mac notes % echo $L
+cyy@mac % L=10%3          #not work
+cyy@mac % echo $L
 10%3
-cyy@mac notes % echo "$L"       #not work
+cyy@mac % echo "$L"       #not work
 10%3
-cyy@mac notes % let L=10%3      #work
-cyy@mac notes % echo $L
+cyy@mac % let L=10%3      #work
+cyy@mac % echo $L
 1
-cyy@mac notes % A=2*3           #test
-cyy@mac notes % echo $A
+cyy@mac % A=2*3           #test
+cyy@mac % echo $A
 2*3
-cyy@mac notes % echo "$A"
+cyy@mac % echo "$A"
 2*3
-cyy@mac notes % let A=2*3       #not work
+cyy@mac % let A=2*3       #not work
 zsh: no matches found: A=2*3
-cyy@mac notes % let B=2*3
+cyy@mac % let B=2*3
 zsh: no matches found: B=2*3
 ```
 
@@ -188,23 +766,23 @@ zsh: no matches found: B=2*3
 
 使用$[]做运算：$[] 与 $(()) 类似，可用于简单的算术运算：
 ```bash
-cyy@mac notes % echo $[1+1]
+cyy@mac % echo $[1+1]
 2
-cyy@mac notes % echo $[2*2]
+cyy@mac % echo $[2*2]
 4
-cyy@mac notes % echo $[5**2]
+cyy@mac % echo $[5**2]
 25
 ```
 使用expr做运算：expr也可用于整数运算。与其他算数运算不同，expr要求操作数和操作符之间使用空格隔开（否则只会打印出字符串），所以特殊的操作符要使用转义符转义（如*）。
 expr支持加减乘除余等：
 ```bash
-cyy@mac notes % expr 1+1
+cyy@mac % expr 1+1
 1+1
-cyy@mac notes % expr 1 + 1
+cyy@mac % expr 1 + 1
 2
-cyy@mac notes % expr 2 * 2
+cyy@mac % expr 2 * 2
 expr: syntax error
-cyy@mac notes % expr 2 \* 2
+cyy@mac % expr 2 \* 2
 4
 ```
 
@@ -212,13 +790,13 @@ cyy@mac notes % expr 2 \* 2
 declare是shell的内建命令，通过它也能进行整数运算，但使用declare显示定义整数变量（-i 参数指定变量为“整数”），再进行赋值。如不定义，赋值“1+1”便是简单的字符串，与“1+1”无异：
 ```bash
 #不用declare定义变量
-cyy@mac notes % S=1+1
-cyy@mac notes % echo $S
+cyy@mac % S=1+1
+cyy@mac % echo $S
 1+1
 #用declare定义变量
-cyy@mac notes % declare -i J
-cyy@mac notes % J=1+1
-cyy@mac notes % echo $J
+cyy@mac % declare -i J
+cyy@mac % J=1+1
+cyy@mac % echo $J
 2
 
 #注意，Shell中的算术运算要求 运算符和操作数之间不能有空格；特殊符号也不需要转义；算术表达式中含有其他变量也不需要用$引用。
@@ -228,50 +806,53 @@ cyy@mac notes % echo $J
 $((算术表达式))
 其中，算术表达式由变量和运算符组成，常见的用法是显示输出和变量赋值。若表达式中的变量没有定义，则计算时，其值会被假设为0（但不会真的因此赋0值给该变量）：
 ```bash
-cyy@mac notes % i=2
-cyy@mac notes % echo $((2*i+1))
+cyy@mac % i=2
+cyy@mac % echo $((2*i+1))
 5
-cyy@mac notes % echo $((2*(i+1)))   #用括号改变运算优先级
+cyy@mac % echo $((2*(i+1)))   #用括号改变运算优先级
 6
 
 #变量赋值
-cyy@mac notes % var=$((2*i+1))
-cyy@mac notes % echo $var
+cyy@mac % var=$((2*i+1))
+cyy@mac % echo $var
 5
 
 #未定义的变量参与算术表达式求值 （默认为0）
-cyy@mac notes % var=$((2*j+1))   
-cyy@mac notes % echo $var
+cyy@mac % var=$((2*j+1))   
+cyy@mac % echo $var
 1
 ```
 
 ## 通配符
+
+```bash
 通配符用于模式匹配，常见的通配符有*、？和[]括起来的字符序列。其中：
 *代表任意长度的字符串，但不包括点号和斜线号，也就是a*无法匹配abc.txt。
 ？可用于匹配任何一个单一字符。
 []代表匹配其中的任意一个字符，如[abc]表示可以匹配a或者b或者c；[]中可以用 - 表明起止，如[a-c]等同于[abc]
 但注意， - 在[]外只是一个普通字符，没有任何特殊作用；*和？在[]中则变成了普通字符，没有通配的功效
+```
 
 大括号：匹配多个排列组合的可能
 ```bash
-cyy@mac notes % echo {x1,x2}{y1,y2}
+cyy@mac % echo {x1,x2}{y1,y2}
 x1y1 x1y2 x2y1 x2y2
 ```
 
 ## 测试
 $?:判断文件是否存在
 ```bash
-cyy@mac notes % ls /Users/cyy/g/notes
+cyy@mac % ls /Users/cyy/g/notes
 0720-tmp-files  IELTS.md        learnfor.sh     learnwhile.sh   test2.md
 HelloWorld.sh   README.md       learnif.sh      quiz.sh
-cyy@mac notes % ls /Users/cyy/g/notes/test2.md
+cyy@mac % ls /Users/cyy/g/notes/test2.md
 /Users/cyy/g/notes/test2.md
-cyy@mac notes % echo $?
+cyy@mac % echo $?
 0
 
-cyy@mac notes % ls /Users/cyy/g/notes/test5.md
+cyy@mac % ls /Users/cyy/g/notes/test5.md
 ls: /Users/cyy/g/notes/test5.md: No such file or directory
-cyy@mac notes % echo $?                       
+cyy@mac % echo $?                       
 1
 
 #输出结果为0，说明存在；输出结果非0，说明不存在。或者用 [ expression ]测试，见下
@@ -281,12 +862,12 @@ cyy@mac notes % echo $?
 中括号内，表达式前后都有空格，需注意
 [ expression ]
 ```bash
-cyy@mac notes % [ -e /Users/cyy/g/notes/test2.md ]
-cyy@mac notes % echo $?
+cyy@mac % [ -e /Users/cyy/g/notes/test2.md ]
+cyy@mac % echo $?
 0
 
-cyy@mac notes % [ -e /Users/cyy/g/notes/test5.md ]
-cyy@mac notes % echo $?                           
+cyy@mac % [ -e /Users/cyy/g/notes/test5.md ]
+cyy@mac % echo $?                           
 1
 ```
 
@@ -393,17 +974,12 @@ echo "Total: $sum"
 ```
 
 
-
-
-
-
-
 # 20240722 Linux Shell脚本学习
 ## 简单脚本的创建和执行 第一个shell脚本：输出 hello world
-1. 创建文件：cyy@mac notes % code HelloWorld.sh
+1. 创建文件：cyy@mac % code HelloWorld.sh
 Shell脚本永远以“#!”开头，这是一个脚本开始的标记，表示系统执行这个文件需要使用某个解释器（常见的解释器有sh、bash），后面的/bin/bash指明了解释器的具体位置
 ```bash
-cyy@mac notes % cat HelloWorld.sh
+cyy@mac % cat HelloWorld.sh
 #!/bin/bash   
 #This line is a comment
 echo "Hello World"
@@ -411,15 +987,15 @@ echo "Hello World"
 2. 运行脚本：
 第一种: bash + 脚本
 ```bash
-cyy@mac notes % bash HelloWorld.sh 
+cyy@mac % bash HelloWorld.sh 
 Hello World
 ```
 第二种：添加可执行权限（chmod +x ➕脚本），然后使用“./”运行
 ```bash
-cyy@mac notes % ./HelloWorld.sh
+cyy@mac % ./HelloWorld.sh
 zsh: permission denied: ./HelloWorld.sh
-cyy@mac notes % chmod +x HelloWorld.sh 
-cyy@mac notes % ./HelloWorld.sh 
+cyy@mac % chmod +x HelloWorld.sh 
+cyy@mac % ./HelloWorld.sh 
 Hello World
 ```
 
@@ -468,7 +1044,7 @@ done
 
 seq,输出序列
 ```bash
-cyy@mac notes % seq 3
+cyy@mac % seq 3
 1
 2
 3
@@ -484,7 +1060,7 @@ done
 
 “$(命令)”表示获取该命令的结果 to get the result of the command
 ```bash
-cyy@mac notes % for i in $(ls)
+cyy@mac % for i in $(ls)
 do
     echo $i
 done
@@ -520,9 +1096,9 @@ done
 
 wc表示统计文件的行数（-l）、单词数（-c）和大小
 ```bash
-cyy@mac notes % wc quiz.sh   
+cyy@mac % wc quiz.sh   
        5       9      48 quiz.sh
-cyy@mac notes % wc -l quiz.sh
+cyy@mac % wc -l quiz.sh
        5 quiz.sh
 ```
 
