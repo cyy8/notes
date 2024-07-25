@@ -4,233 +4,353 @@ Linux learning notes
 https://github.com/cyy8/notes
 
 
+### 练习：提取某个网址对应的IP地址
+```bash
+nslookup abc.com | grep 'Address'| grep -v '#'| cut -f2 -d' '| tr '\n' ' '
+99.84.133.46 99.84.133.97 99.84.133.98 bash-3.2$ 
+
+#nslookup 关键词待搜索 DNS dig http
+#grep 获取含有Address的行，并删除带有#的行
+#cut 以空格为分隔符，提取第二列
+#tr 将换行替换为空格，合并为一行 
+```
+
+## Install ohmyzsh
 
 sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
+## Enter bash
+```bash
 cyy@192 ~ % bash
-The default interactive shell is now zsh.
-To update your account to use zsh, please run `chsh -s /bin/zsh`.
-For more details, please visit https://support.apple.com/kb/HT208050.
 bash-3.2$ VAR04="A        B        C"
 bash-3.2$ echo $VAR04
 A B C
 bash-3.2$ echo $SHELL
 /bin/zsh
-
-# 20240724 《UNIX/LINUX/OS X中的Shell编程》 人民邮电出版社 开始学习
-## Chapter 1 基础概述
-### date命令：显示日期和时间
-```bash
-➜  ~ date
-2024年 7月24日 星期三 15时33分35秒 CST
 ```
-### who命令：找出已登录人员
+
+# Day 7 20240725
+
+UNIX/LINUX/OS X中的Shell编程》 人民邮电出版社
+
+## Chapter 2 什么是Shell
+内核和实用工具：Unix系统在逻辑上被划分为内核和实用工具（Utility），通常来说，所有的访问都要经过Shell。
+内核是Unix系统的核心所在，内核位于计算机的内存中；组成Unix的各种实用工具位于计算机磁盘中，需要的时候会被加载到内存并执行。
+
+### Shell的功能
+1. 程序执行：Shell负责执行终端中指定的所有程序。
+    每次输入一行内容（正式名称：命令行），Shell会扫描命令行，确定要执行的程序名称及所传入的程序参数。
+
+    Shell会使用一些特殊字符确定程序名称及每个参数的起止，这些字符统称为空白字符（whitespace characters），包括空格符、水平制表符和行尾符（又叫换行符）。连续多个空白会被Shell忽略。
+
 ```bash
-➜  ~ who
+mv tmp/mazewars games 
+#Shell会扫描该命令行，提取到 行首 到 第一个空白字符之间的所有命令作为待执行的程序名称：mv。随后的空白字符（多余的空格）会被忽略。
+#第一、二个空白字符之间的字符，作为mv的第一个参数 tmp/mazewars
+#games 是第二个参数
+```
+2. 变量及文件名替换:
+Shell 分析命令行 “echo *”时，识别出了特殊字符星号，将其替换成了目录下所有的文件名。
+```bash
+bash-3.2$ ls
+ls_no_usr.txt   ls_usr.txt      notes           sayHello.sh     testhello.txt   uniq.txt
+bash-3.2$ echo *
+ls_no_usr.txt ls_usr.txt notes sayHello.sh testhello.txt uniq.txt
+```
+
+3. I/O重定向
+重定向字符：> < >>  <<
+```bash
+bash-3.2$ ls
+ls_no_usr.txt   ls_usr.txt      notes           sayHello.sh     testhello.txt   uniq.txt
+bash-3.2$ cat uniq.txt
+abc
+123
+abc
+123
+bash-3.2$ echo Remeber to learn Shell > uniq.txt  #将内容写到已有的文件中
+bash-3.2$ cat uniq.txt
+Remeber to learn Shell  #原有的文件内容被覆盖
+bash-3.2$ echo Remeber to learn Shell > uniq2.txt   #将内容写到不存在的文件中
+bash-3.2$ cat uniq2.txt
+Remeber to learn Shell      #内容被写入了该文件（与书上讲的不一致，书上讲Shell会报错）
+bash-3.2$ ls
+ls_no_usr.txt   ls_usr.txt      notes           sayHello.sh     testhello.txt   uniq.txt        uniq2.txt
+# 该文件被自动创建
+```
+```bash
+bash-3.2$ wc -l uniq2.txt  #Shell先读取wc命令，第一个参数是 -l，要统计行数；第二个参数指定了待统计的文件
+       1 uniq2.txt      #因此输出了打印结果和待统计文件的文件名
+bash-3.2$ wc -l < uniq2.txt #与上条不同，Shell扫描时发现了重定向字符<, 其后的单词被解释成了从中重定向输入的文件名（可以理解为文件内容被Shell读取了？），然后Shell开始执行wc程序，并将标准输入重定向为文件uniq2.txt、并传入单个参数-l。
+       1    #wc统计行数的时候，只知内容，不知是何文件的内容，所以只输出了行数，没有文件名。
+
+#待定：是否可以理解为，重定向优先级高于命令和参数？yes
+```
+
+4. 管道
+Shell扫描命令行时，除了重定向符号，还会查找管道字符|。每找到一个，就会将之前命令的标准输出连接到之后命令的标准输入，然后执行这两个命令。
+```bash
+bash-3.2$ who
 cyy              console       7  3 22:17 
-
-#也可以获取本人信息
-➜  ~ who am i
-cyy                            7 24 15:35 
+bash-3.2$ who | wc -l  #who的标准输出连接到了wc -l的标准输入
+       1
 ```
-### echo命令：回显字符
-echo命令会在终端打印出（或者回显）在行中输入的所有内容
+
+5. 环境控制（Chapter 10展开）
+6. 解释型编程语言
+    - Shell有自己内建的编程语言，这种语言是解释型的，即Shell会分析所遇到的每一条语句，然后执行所发现的有效的命令。
+    - 与C++及Swift不同，这些语言中，程序语句在执行之前会被编译成可由机器执行的形式
+    - 解释型语言一般更易于调试和修改，但耗时较长
+
+
+## Chapter 3 常备工具
+
+### 正则表达式 （）
+与Shell只能在文件名替换中识别部分正则表达式。 两者区别？
+#### 点号（.）：匹配任意单个字符
 ```bash
-➜  ~ echo this is a test
-this is a test
-➜  ~ echo why not print out a longer line with echo? 
-zsh: no matches found: echo?
-➜  ~ echo "why not print out a longer line with echo?"
-why not print out a longer line with echo?
-➜  ~ echo one    two      three four
-one two three four
+r. #可以匹配r及任意单个字符
+.x. #可以匹配任意两个字符包围的x，这两个字符不必相同
 ```
-### ls命令：查看目录下的文件
-### cat命令：检查文件内容 concatenate
+
 ```bash
-➜  notes git:(main) ✗ cat forlist.sh
-#! /bash/bin
-for VAR in {1..5}
-do
-    echo "Loop $VAR times"
-done%  
+#创建名为edintro的文件，并添加内容如下：
+The Unix operating system was pioneered by Ken
+Thompson and Dennis at Bell Laboratories
+in the late 1960s. One of the primary goals in
+the design of the Unix system was to create an 
+environment that promoted efficient program
+development
+
+bash-3.2$ ed edintro    #输入ed指令
+newline appended        #输出结果
+239                     #输出结果 字符数
+1,$p                    #输入打印所有行指令：1,$指 第一行至末行；p指 打印
+The Unix operating system was pioneered by Ken
+Thompson and Dennis at Bell Laboratories
+in the late 1960s. One of the primary goals in
+the design of the Unix system was to create an 
+environment that promoted efficient program
+development
+
+/ .. /      #查找由空格包围的2个字符（2个字母的单词）
+The Unix operating system was pioneered by Ken
+/           #重复上一个操作，会逐行输出
+Thompson and Dennis at Bell Laboratories
+/
+in the late 1960s. One of the primary goals in
+/
+the design of the Unix system was to create an 
+/
+The Unix operating system was pioneered by Ken #全文搜索完成后，会返回到第一行
+##存在问题：如何一次性打印出所有符合要求的结果？
+
+1,$s/p.o/XXX/g          #将所有的“p.o”替换成“XXX”，s表示替换，g表示所有
+1,$p                    #查看修改结果               
+The Unix operating system was XXXneered by Ken
+ThomXXXn and Dennis at Bell Laboratories
+in the late 1960s. One of the primary goals in
+the design of the Unix system was to create an 
+environment that XXXmoted efficient XXXgram
+
+##存在的问题：修改结果不可逆；不加g的时候不是每行都替换，很奇怪
 ```
-### wc命令：统计文件中单词数量
-wc命令可以获得文件中的行数、单词数和字符数
+
+#### 脱字符（^）：匹配行首
+如果脱字符作为正则表达式的第一个字符，它可以匹配行首位置。如：
 ```bash
-➜  g cat ls_usr.txt
-total 8
--rw-r--r--   1 cyy  staff    0  7 24 12:52 ls_usr.txt
-drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
--rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
-➜  g wc ls_usr.txt
-       4      29     163 ls_usr.txt
+^George  # 只能匹配出现在行首的George
 ```
-### 命令选项 -，后面直接跟字母
-如要计算文件中包含的行数，可以用“wc -l”; 字符数可以用 -c选项；单词数 -w选项
+因此，正则表达式中被称为“左根部（left-rooting）”
+
 ```bash
-➜  g wc -l ls_usr.txt  #-l选项 行数
-       4 ls_usr.txt
-➜  g wc -c ls_usr.txt  #-c选项 字符数
-     163 ls_usr.txt
-➜  g wc -w ls_usr.txt  #-w选项 单词数
-      29 ls_usr.txt
+bash-3.2$ ed lred
+newline appended
+239
+/the/       #查找the
+in the late 1960s. One of the primary goals in
+/           #继续查找the
+the design of the Unix system was to create an 
+/^the/      #查找位于行首的the
+the design of the Unix system was to create an
+
+
+>>The Unix operating system was pioneered by Ken
+>>Thompson and Dennis at Bell Laboratories
+>>in the late 1960s. One of the primary goals in
+>>the design of the Unix system was to create an 
+>>environment that promoted efficient program
+>>development
+1,$s/>>/^/g             #把所有的>>替换成^
+1,$p
+^The Unix operating system was pioneered by Ken
+^Thompson and Dennis at Bell Laboratories
+^in the late 1960s. One of the primary goals in
+^the design of the Unix system was to create an 
+^environment that promoted efficient program
+^development
 ```
 
-### cp命令：复制文件
+#### 美元符号（$）：匹配行尾
 ```bash
-cp names saved_names  #names表示源文件，saved_names表示目标文件
+contents$   #可匹配位于行尾的contents
+.$          #可匹配行尾的任意字符
+\.$         #可匹配位于行尾的点号
+^\.         #可匹配点号开头的行
 ```
+
 ```bash
-➜  g ls
-ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.txt uniq.txt
-➜  g cp sort.txt sortcp.txt
-➜  g ls
-ls_no_usr.txt notes         sort.txt      testhello.txt
-ls_usr.txt    sayHello.sh   sortcp.txt    uniq.txt
+#原文
+The Unix operating system was pioneered by Ken
+Thompson and Dennis at Bell Laboratories
+in the late 1960s. One of the primary goals in
+the design of the Unix system was to create an 
+environment that promoted efficient program
+development.
+
+bash-3.2$ ed dollared
+newline appended
+240
+//.$/       #转义是反斜杠
+?
+/\.$/       #输出以点号结尾的行
+development.
+
+bash-3.2$ ed dollared
+newline appended
+240
+1,$s/$/>>/g     #每行行尾加上>>
+1,$p            #全部打印
+The Unix operating system was pioneered by Ken>>
+Thompson and Dennis at Bell Laboratories>>
+in the late 1960s. One of the primary goals in>>
+the design of the Unix system was to create an >>
+environment that promoted efficient program>>
+development.>>
+
+1,$s/..$//      #删除每行最后的2个字符（空格替换）
+1,$p
+The Unix operating system was pioneered by Ken
+Thompson and Dennis at Bell Laboratories
+in the late 1960s. One of the primary goals in
+the design of the Unix system was to create an 
+environment that promoted efficient program
+development.
 ```
-### mv命令：文件重命名/移动
-重命名
+^和$组合使用：
 ```bash
-mv old_name new_name
+^$ #匹配空行
+^ $ #匹配单个空格组成的行
 ```
+
+#### 英文省略号（[...]）：匹配字符组
 ```bash
-➜  g ls
-ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.txt uniq.txt
-➜  g mv sort.txt sortmv.txt
-➜  g ls
-ls_no_usr.txt notes         sortcp.txt    testhello.txt
-ls_usr.txt    sayHello.sh   sortmv.txt    uniq.txt
+[0-9]   #匹配0-9之间的任意数字
+[A-Z]   #匹配大写字母
+[A-Za-z]    #匹配大写和小写字母
+[^A-Z]      #匹配大写字母以外的任意字符 相当于Shell中的感叹号！
 ```
 
-移动
-mv oldNamefile newNamefile 移动 #移动没搞懂 解答 ../上级目录，./同级目录
+#### 星号（*）：匹配零个或多个字符
+正则表达式中，星号用于匹配零次或多次出现在其之前的正则表达式元素，因此：
 ```bash
-➜  g mv sortmv.txt ./notes
-➜  g ls
-ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   testhello.txt uniq.txt
-➜  g cd notes
-➜  notes git:(main) ✗ ls
-0720-tmp-files   elifscore.sh     ifcheckfile.sh   learnwhile.sh    test2.md         while03.sh
-HelloWorld.sh    forlist.sh       ifscore.sh       quiz.sh          until01.sh
-IELTS.md         forlist03.sh     learnfor.sh      sortmv.txt       while01.sh
-README.md        fruit01.sh       learnif.sh       student_info.txt while02.sh
-```
+X*      #可以匹配0个或多个大写字母X
+XX*     #可以匹配1个或多个大写字母X
+X+      #同等替换XX*
 
-### rm命令：删除文件
 ```bash
-rm names
-```
-rm也可以一次性删除多个文件，空格隔开即可
+#原文
+This             is      an   example
+of a     file     that 
+contains
 
-### mkdir命令：创建目录
-### 目录之间复制(cp)、移动（mv）文件
+bash-3.2$ ed starblank
+newline appended
+71
+1,$s/  */ /g        #将2个及以上的空格替换成1个个空格
+1,$p
+This is an example
+of a file that 
+contains
+```
+
 ```bash
-cp oldd/name1 newd/name2 
-#同级目录格式
+#原文
+The Unix operating system was pioneered by Ken
+Thompson and Dennis at Bell Laboratories
+in the late 1960s. One of the primary goals in
+the design of the Unix system was to create an 
+environment that promoted efficient program
+development
 
-#因为在不同目录中，名字可以相同，此时可以仅指定目录：
-cp oldd/name1 newd
+bash-3.2$ ed ed
+newline appended
+239
+1,$s/e.*e/+++/g     #将每行中e开始与结束之间的部分，替换成+++
+1,$p
+Th+++n              #e Unix operating system was pioneered by Ke 被替换
+Thompson and D+++s  #ennis at Bell Laboratorie 被替换
+in th+++ primary goals in   #e late 1960s. One of the 被替换，注意：并不会因为遇到了e就停止，而是会替换直至最后一个
+th+++ an #esign of the Unix system was to create被替换
++++nt program
+d+++nt
+
+
+bash-3.2$ ed ed
+newline appended
+239
+
+1,$s/^e.*/+++/      #将e为行首的单词替换成+++
+1,$p
+The Unix operating system was pioneered by Ken
+Thompson and Dennis at Bell Laboratories
+in the late 1960s. One of the primary goals in
+the design of the Unix system was to create an 
++++ #仅environment被替换
+development
+
+1,$s/.*n//g     #将每行中 字母n及其以前的内容删除
+1,$p
+
+is at Bell Laboratories
+
+
++++
+t
 ```
-### ln命令：文件链接
-创建链接，可以克服cp 占2倍磁盘空间、只改了一处另一处忘记改的风险问题
+
 ```bash
-➜  g2 ls
-456       789       899       mv202.doc
-➜  g2 ln mv202.doc mv203.doc
-➜  g2 ls
-456       789       899       mv202.doc mv203.doc
-➜  g2 cat mv202.doc
-➜  g2 code mv202.doc
-➜  g2 cat mv202.doc 
-test  ln %                                                                                                 
-➜  g2 cat mv203.doc
-test  ln %
-#执行ls命令时，会显示两个独立的文件
-➜  g2 ls -l          
-total 16
-drwxr-xr-x  2 cyy  staff  64  7 20 14:48 456
-drwxr-xr-x  3 cyy  staff  96  7 20 14:49 789
-drwxr-xr-x  3 cyy  staff  96  7 20 14:53 899
--rw-r--r--  2 cyy  staff  42  7 24 16:40 mv202.doc
--rw-r--r--  2 cyy  staff  42  7 24 16:40 mv203.doc
--rw-r--r--  1 cyy  staff   0  7 24 16:42 test2.txt
-#第二列显示2，表示文件的连接数，没有链接的非目录文件显示1（test2.txt）
-#两个链接文件可以任意删一个，另一个不会随之消失，删除后第2列会显示1
+#原文
+- :
+
+1,$s/:-//g      #如果想匹配连接符，不可直接在斜杠里
+?
+1,$s/[-]//g     #匹配连接符，需要加中括号
+1p
+ :
+
+类似的，[]a-z] 表示匹配又中括号或小写字母
 ```
 
-### rmdir命令：删除目录 有危险不用
-### 文件名替换 星号 *
-星号可以匹配当前目录下 所有 的文件名
+#### \{...\}：匹配固定次数的子模式
 ```bash
-#如果用cat，则会显示所有的文件内容
-➜  star cat *
-chapt 1 content testcontent test2content test3content4%
-#如果用echo，则会显示当前目录下的所有文件
-➜  star echo *
-chapt1 chapt2 chapt3 chapt4
-#也可以只显示出以chapt开头的文件内容和文件：
-➜  star cat chapt*
-chapt 1 content testcontent test2content test3content4%                                                    
-➜  star echo chapt*
-chapt1 chapt2 chapt3 chapt4
-#不仅限于最后一个文件名，可以是文件名的任意位置
-➜  star echo ch*pt1
-chapt1
-```
-### 匹配单个字符
-星号：可以匹配0个或多个字符，也就是x*，可以匹配文件x、x1、xabc
-问号：仅能匹配单个字符
-```bash
-star02 ls
-➜  star02 touch a aa aax alice b bb c cc report1 report2 report3
-➜  star02 ls
-a       aa      aax     alice   b       bb      c       cc      report1 report2 report3
-➜  star02 echo ? 
-a b c
-➜  star02 echo ??
-aa bb cc
-➜  star02 echo a?
-aa
-➜  star02 echo ?*
-a aa aax alice b bb c cc report1 report2 report3
-➜  star02 echo ???*
-aax alice report1 report2 report3
+\{min,max\}  #min指待匹配的正则表达式需要出现的最小次数，max则为最大次数；且必须用\对花括号进行转义
+X\{1,10\}    #指能匹配1-10个连续的X
+[A-Za-z]\{4,7\} #匹配4-7之间的字母字符序列
+\{10\}  #花括号之间只有一个数字，表示正则表达式必须匹配的次数
+[a-zA-Z]\{7\}       #能够匹配7个字母字符
+.\{10\}     #能够匹配10个任意字符
++\{5,\}     #花括号单个数字紧跟一个逗号，表示至少匹配5次，最多不限。 此处指匹配至少5个连续的+
 ```
 
-除问号，另一种匹配单个字符的方式：中括号给出待匹配的字符列表
-```bash
-➜  star02 echo [br]*   #匹配以b或r开头的所有文件
-b bb report1 report2 report3
-
-➜  star02 echo *[0-9] #匹配以数字结尾的所有文件
-report1 report2 report3
-
-➜  star02 echo [!br]* #匹配非b或r开头的文件，不work
-zsh: event not found: br]
-```
-### 空格问题
-如果文件名中有空格，直接cat+文件名会报错，2种解决方式：
-```bash
-➜  star02 cat my test document 
-cat: my: No such file or directory
-cat: test: No such file or directory
-cat: document: No such file or directory
-➜  star02 cat my\ test\ document   #将空格转义
-➜  star02 cat "my test document"   #文件名加引号，单双都可以
-➜  star02 cat 'my test document'
-```
-### 标准输入
-sort 排序不work  #待修正
+#### \(...\)：保存已匹配的字符
+有点太复杂了，先马一下好了
 
 
+# Day 6 20240724 
 
+Linux 脚本学习（自学版）
 
-
-
-
-
-# 20240724 Linux 脚本学习（自学版）
 ## while循环
 结构
 ```bash
@@ -573,15 +693,213 @@ Call function sayHello
 Hello
 ```
 
+# 《UNIX/LINUX/OS X中的Shell编程》 人民邮电出版社 开始学习
+## Chapter 1 基础概述
+### date命令：显示日期和时间
+```bash
+➜  ~ date
+2024年 7月24日 星期三 15时33分35秒 CST
+```
+### who命令：找出已登录人员
+```bash
+➜  ~ who
+cyy              console       7  3 22:17 
 
+#也可以获取本人信息
+➜  ~ who am i
+cyy                            7 24 15:35 
+```
+### echo命令：回显字符
+echo命令会在终端打印出（或者回显）在行中输入的所有内容
+```bash
+➜  ~ echo this is a test
+this is a test
+➜  ~ echo why not print out a longer line with echo? 
+zsh: no matches found: echo?
+➜  ~ echo "why not print out a longer line with echo?"
+why not print out a longer line with echo?
+➜  ~ echo one    two      three four
+one two three four
+```
+### ls命令：查看目录下的文件
+### cat命令：检查文件内容 concatenate
+```bash
+➜  notes git:(main) ✗ cat forlist.sh
+#! /bash/bin
+for VAR in {1..5}
+do
+    echo "Loop $VAR times"
+done%  
+```
+### wc命令：统计文件中单词数量
+wc命令可以获得文件中的行数、单词数和字符数
+```bash
+➜  g cat ls_usr.txt
+total 8
+-rw-r--r--   1 cyy  staff    0  7 24 12:52 ls_usr.txt
+drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
+-rw-r--r--   1 cyy  staff   16  7 24 10:49 uniq.txt
+➜  g wc ls_usr.txt
+       4      29     163 ls_usr.txt
+```
+### 命令选项 -，后面直接跟字母
+如要计算文件中包含的行数，可以用“wc -l”; 字符数可以用 -c选项；单词数 -w选项
+```bash
+➜  g wc -l ls_usr.txt  #-l选项 行数
+       4 ls_usr.txt
+➜  g wc -c ls_usr.txt  #-c选项 字符数
+     163 ls_usr.txt
+➜  g wc -w ls_usr.txt  #-w选项 单词数
+      29 ls_usr.txt
+```
 
+### cp命令：复制文件
+```bash
+cp names saved_names  #names表示源文件，saved_names表示目标文件
+```
+```bash
+➜  g ls
+ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.txt uniq.txt
+➜  g cp sort.txt sortcp.txt
+➜  g ls
+ls_no_usr.txt notes         sort.txt      testhello.txt
+ls_usr.txt    sayHello.sh   sortcp.txt    uniq.txt
+```
+### mv命令：文件重命名/移动
+重命名
+```bash
+mv old_name new_name
+```
+```bash
+➜  g ls
+ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.txt uniq.txt
+➜  g mv sort.txt sortmv.txt
+➜  g ls
+ls_no_usr.txt notes         sortcp.txt    testhello.txt
+ls_usr.txt    sayHello.sh   sortmv.txt    uniq.txt
+```
 
+移动
+mv oldNamefile newNamefile 移动 #移动没搞懂 解答 ../上级目录，./同级目录
+```bash
+➜  g mv sortmv.txt ./notes
+➜  g ls
+ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   testhello.txt uniq.txt
+➜  g cd notes
+➜  notes git:(main) ✗ ls
+0720-tmp-files   elifscore.sh     ifcheckfile.sh   learnwhile.sh    test2.md         while03.sh
+HelloWorld.sh    forlist.sh       ifscore.sh       quiz.sh          until01.sh
+IELTS.md         forlist03.sh     learnfor.sh      sortmv.txt       while01.sh
+README.md        fruit01.sh       learnif.sh       student_info.txt while02.sh
+```
 
+### rm命令：删除文件
+```bash
+rm names
+```
+rm也可以一次性删除多个文件，空格隔开即可
 
+### mkdir命令：创建目录
+### 目录之间复制(cp)、移动（mv）文件
+```bash
+cp oldd/name1 newd/name2 
+#同级目录格式
 
+#因为在不同目录中，名字可以相同，此时可以仅指定目录：
+cp oldd/name1 newd
+```
+### ln命令：文件链接
+创建链接，可以克服cp 占2倍磁盘空间、只改了一处另一处忘记改的风险问题
+```bash
+➜  g2 ls
+456       789       899       mv202.doc
+➜  g2 ln mv202.doc mv203.doc
+➜  g2 ls
+456       789       899       mv202.doc mv203.doc
+➜  g2 cat mv202.doc
+➜  g2 code mv202.doc
+➜  g2 cat mv202.doc 
+test  ln %                                                                                                 
+➜  g2 cat mv203.doc
+test  ln %
+#执行ls命令时，会显示两个独立的文件
+➜  g2 ls -l          
+total 16
+drwxr-xr-x  2 cyy  staff  64  7 20 14:48 456
+drwxr-xr-x  3 cyy  staff  96  7 20 14:49 789
+drwxr-xr-x  3 cyy  staff  96  7 20 14:53 899
+-rw-r--r--  2 cyy  staff  42  7 24 16:40 mv202.doc
+-rw-r--r--  2 cyy  staff  42  7 24 16:40 mv203.doc
+-rw-r--r--  1 cyy  staff   0  7 24 16:42 test2.txt
+#第二列显示2，表示文件的连接数，没有链接的非目录文件显示1（test2.txt）
+#两个链接文件可以任意删一个，另一个不会随之消失，删除后第2列会显示1
+```
 
+### rmdir命令：删除目录 有危险不用
+### 文件名替换 星号 *
+星号可以匹配当前目录下 所有 的文件名
+```bash
+#如果用cat，则会显示所有的文件内容
+➜  star cat *
+chapt 1 content testcontent test2content test3content4%
+#如果用echo，则会显示当前目录下的所有文件
+➜  star echo *
+chapt1 chapt2 chapt3 chapt4
+#也可以只显示出以chapt开头的文件内容和文件：
+➜  star cat chapt*
+chapt 1 content testcontent test2content test3content4%                                                    
+➜  star echo chapt*
+chapt1 chapt2 chapt3 chapt4
+#不仅限于最后一个文件名，可以是文件名的任意位置
+➜  star echo ch*pt1
+chapt1
+```
+### 匹配单个字符
+星号：可以匹配0个或多个字符，也就是x*，可以匹配文件x、x1、xabc
+问号：仅能匹配单个字符
+```bash
+star02 ls
+➜  star02 touch a aa aax alice b bb c cc report1 report2 report3
+➜  star02 ls
+a       aa      aax     alice   b       bb      c       cc      report1 report2 report3
+➜  star02 echo ? 
+a b c
+➜  star02 echo ??
+aa bb cc
+➜  star02 echo a?
+aa
+➜  star02 echo ?*
+a aa aax alice b bb c cc report1 report2 report3
+➜  star02 echo ???*
+aax alice report1 report2 report3
+```
 
-# 20240723 Linux 脚本学习（自学版）
+除问号，另一种匹配单个字符的方式：中括号给出待匹配的字符列表
+```bash
+➜  star02 echo [br]*   #匹配以b或r开头的所有文件
+b bb report1 report2 report3
+
+➜  star02 echo *[0-9] #匹配以数字结尾的所有文件
+report1 report2 report3
+
+➜  star02 echo [!br]* #匹配非b或r开头的文件，不work
+zsh: event not found: br]
+```
+### 空格问题
+如果文件名中有空格，直接cat+文件名会报错，2种解决方式：
+```bash
+➜  star02 cat my test document 
+cat: my: No such file or directory
+cat: test: No such file or directory
+cat: document: No such file or directory
+➜  star02 cat my\ test\ document   #将空格转义
+➜  star02 cat "my test document"   #文件名加引号，单双都可以
+➜  star02 cat 'my test document'
+```
+### 标准输入
+sort 排序不work  #待修正
+
+# Day 5 20240723 Linux 脚本学习（自学版）
 ## 变量：
 变量命名：Shell中的变量必须以字母或下划线开头，后面可以跟数字、字母或下划线，变量长度没有限制。但要注意以下两类错误类型：
 a. PS1 #变量不能和Shell的预设变量名重名  
@@ -974,7 +1292,7 @@ echo "Total: $sum"
 ```
 
 
-# 20240722 Linux Shell脚本学习
+# Day 4 20240722 Linux Shell脚本学习
 ## 简单脚本的创建和执行 第一个shell脚本：输出 hello world
 1. 创建文件：cyy@mac % code HelloWorld.sh
 Shell脚本永远以“#!”开头，这是一个脚本开始的标记，表示系统执行这个文件需要使用某个解释器（常见的解释器有sh、bash），后面的/bin/bash指明了解释器的具体位置
@@ -1120,7 +1438,7 @@ done  | sort -r -t "," -k 2 -n
 
 
 
-# 20240720 Linux 系统命令及Shell脚本实践指南
+# Day 3 20240720 Linux 系统命令及Shell脚本实践指南
 - 生成某个文件并添加特定内容 echo
 ```bash
 # 重定向 > 添加并覆盖原有； 追加 >> 最后添加
@@ -1549,7 +1867,7 @@ this is line 5, this is Fifth line%
 
 
 
-# 20240715  Linux实操篇 实用指令
+# Day2 20240715  Linux实操篇 实用指令
 - P24 pwd 显示当前工作目录的绝对路径
 - ls -a 显示当前目录所有的文件和目录，包括隐藏的
   -l 列表形式显示
@@ -1597,7 +1915,7 @@ code .
 
 
 
-# 20240714  Learn Linux
+# Day 1 20240714  Learn Linux 
 
 git status; git add .; git commit -m "$( date "+%Y-%m-%d %T")"; git push
 
