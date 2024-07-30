@@ -1,7 +1,578 @@
 # notes
-Linux learning notes
 
-https://github.com/cyy8/notes
+My GitHub：https://github.com/cyy8/notes
+
+
+TODO:
+Linux/ Mac 安装软件 / 管理
+
+- Mac,  brew;  brew install htop
+- Ubuntu, apt; apt update; apt install -y htop
+- Centos, yum; yum -y install htop  
+
+Centos7 issue: mirrorlist.centos.org no longer resolve?
+https://serverfault.com/questions/1161816/mirrorlist-centos-org-no-longer-resolve
+To resolve the issue you can mass update all .repo files:
+
+```bash
+sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+```
+
+
+# mac install brew 
+
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+
+# Day 12 20240730 （2h）
+
+## [Markdown学习](https://www.markdowntutorial.com/lesson/1/)
+
+### italics bold monospace
+- italic, surround words with an underscore ( _ ). 
+    - eg. _good_
+- bold, surround words with two asterisks ( ** ). 
+    - eg. **bold**
+- italic and bold,either is ok 
+    - eg. **_both_** , _**both**_
+- highlight with monospace
+    - `mono`
+
+### header
+- Preface the phrase with a hash mark (#). 
+- You place the same number of hash marks as the size of the header you want. header one = # Header One
+### link
+- brackets ( [ ] ), and then wrap the link in parentheses ( ( ) ) 
+    - eg. You can [search for it](www.google.com) on the website.
+- make links within headings 
+    - eg. The line is Header four and add links to the BBC
+        - #### The Latest News from [the BBC](www.bbc.com/news) 
+### images
+- inline image link: an exclamation point ( ! ), wrap the alt text in brackets ( [ ] ), and then wrap the link in parentheses ( ( ) )
+    - eg. ![A pretty tiger](https://upload.wikimedia.org/wikipedia/commons/5/56/Tiger.50.jpg)
+- reference image: an exclamation point, then provide two brackets for the alt text, and then two more for the image tag, like this: ![The founding father][Father]. And at the bottom of your Markdown page, you'll define an image for the tag, like this: [Father]: http://octodex.github.com/images/founding-father.jpg
+    - eg. 
+    ![Black cat][Black]    
+    ![Orange cat][Orange]
+
+    [Black]: https://upload.wikimedia.org/wikipedia/commons/a/a3/81_INF_DIV_SSI.jpg
+
+    [Orange]: http://icons.iconarchive.com/icons/google/noto-emoji-animals-nature/256/22221-cat-icon.png
+### blockquotes
+- blockquote: preface a line with the "greater than" caret (>) eg. 
+    >In a few moments he was barefoot
+- quote spans multiple paragraphs：blank lines must contain the caret character. eg.
+    > His words seemed to have struck some deep chord in his own nature. Had he spoken
+    >
+    > —Of whom are you speaking? Stephen asked at length.
+    >
+    > Cranly did not answer.
+### lists
+- unordered list: preface with an asterisk ( * ) (- + also work) and a space
+    eg. 
+    * a  
+    * b
+        + c     (# to add some sub-list, indent each asterisk one space more than the preceding item)
+            - d
+- ordered list：with numbers
+    eg. 
+    1. a
+    2. b
+    3. c
+### paragraphs
+- hard break(not recommended): to forcefully insert a new line by inserting a blank line  
+    eg. 
+    
+    Do I contradict myself?
+
+    Very well then I contradict myself,
+- soft break: each line end up with two space and then start a new line.
+    eg.   
+    Do I contradict myself?  
+    Very well then I contradict myself,  
+### strike through（vs不兼容）
+    ~~It should be deleted~~
+
+### task lists（vs不兼容）
+    - [x] Completed task
+    - [~] Inapplicable task
+    - [ ] Incomplete task  
+
+## 图解HTTP
+how to read this book：skip chapter 5、8、9、11，skim chapter 6
+### Chapter 1
+#### Web协议和HTTP
+* *Web浏览器*通过地址栏指定的*URL*，从*Web服务器*获取文件资源（resource）等信息，从而显示出Web页面
+    * URL：Uniform Resource Locator 统一资源定位器
+* Web使用一种名为*HTTP*的协议作为规范。That's to say，Web是建立在HTTP协议上通信的
+    * HTTP：HyperText Transfer Protocol 超文本传输协议
+* HTTP版本：当前主流版本是1997年公布的HTTP/1.1。HTTP/2.0定制中
+#### TCP/IP
+* 通常使用的网络（包括互联网）是在*TCP/IP*协议族的基础上运作的。HTTP是其子集。
+* TCP/IP：与互联网相关联的协议集合起来，称为～
+* TCP/IP协议族分层：
+    * 应用层：决定了向用户提供应用服务时通信的活动。**HTTP**和**DNS**在该层
+    * 传输层：提供处于网络连接中两台计算机间的数据传输。传输层有2个性质不同的协议：TCP和UDP
+        * TCP Transmission Control Protocol 传输控制协议
+        * UDP User Data Protocol 用户数据报协议
+    * 网络层：处理网络上流动的数据包。数据包是网络传输的最小数据单位 **IP在该层**
+    * 链路层：也称网络接口层。硬件上的范畴均在链路层作用范围内。
+* **封装**：发送端层与层传输数据时，每经过一层时必定打上该层所属的首部信息。反之，接收端层间传输数据时，每经过一层会把对应的首部消去。这种把数据信息包装起来的做法称为封装（encapsulate）。#待加图
+
+#### 与HTTP关系密切的协议 之 IP协议
+* IP（Internet Protocol）网际协议位于网络层。
+    * 注意区分 IP协议和IP地址，两者不是一回事
+    * IP协议作用是把数据包传给对方，要保证可以顺利传输，需要很多条件，其中2个很重：IP地址和MAC地址
+    * IP地址指明了节点被分配到的地址；MAC地址是网卡所属的固定地址
+    * IP地址和MAC地址可以配对；IP地址可变，MAC基本不变
+* ARP协议：用以解析地址。可以根据IP地址反查出对应的MAC地址
+#### 与HTTP关系密切的协议 之 TCP协议
+* TCP位于传输层，提供字节流服务
+    *字节流服务（Byte Stream Service）：为方便传输，将大块数据分隔成以**报文段（segment）**为单位的数据报进行管理
+* 三次握手 three-way handshaking
+    1. 发送端首先发送一个带**SYN**标志的数据报给对方
+    2. 接收端收到后，会穿一个带有**SYN/ACK**标志的数据包以示传达确认消息
+    3. 最后，发送端再回传一个带**ACK**表示的数据包，代表“握手”结束。
+    
+    >补充说明：1. 握手过程中使用了TCP的表示：SYN synchronize 和 ACK acknowledgement  
+    >2. 若在某个阶段莫名中断，TCP协议会再次以相同的顺序发送相同的数据包
+#### 负责解析域名的DNS服务
+* DNS（Domain Name System）：位于应用层。提供域名到IP地址的解析服务
+* DNS 协议可以通过域名查IP，反过来也可以
+
+#### URI和URL
+- URI Uniform Resource Identifier：某个协议方案表示的资源的定位表示符
+- URI用字符串标识某一互联网资源，而URL表示资源的地点（互联网上所处的位置）。so URL是URI的子集
+
+### Chapter 2
+#### 客户端和服务器端
+* 请求访问文本或图像等资源的一端为客户端；提供资源响应的一端为服务器端
+* 两台计算机作为C/S，两者角色可能会互换
+#### 方法
+* GET 获取资源
+* POST 传输实体主体（entity body）
+* PUT 传输文件
+* HEAD 获得报文首部
+* DELETE 删除文件
+* OPTIONS 询问支持的方法
+* TRACE 追踪路径
+#### 持久链接
+* 特点：只要任意一端没有明确提出断开连接，则保持TCP连接状态
+* 优点
+    * 减少TCP连接的重复建立和断开所造成的额外开销
+    * 减轻服务端的负载
+    * 减少开销的那部分时间，使HTTP请求和响应能更早地结束，从而使Web页面的显示速度相应地提高了
+* HTTP/1.1 都是默认持久链接。1.0内未标准化
+#### 管线化
+* 持久链接使得多数请求以管线化（pipelining）方式发送成为可能
+* 同时并行发送多个请求，而不需要一个接一个地等待相应
+* 管线化可以让请求更快结束。请求数越多，时间差就越明显
+
+#### Cookie
+* HTTP是无状态协议，不管理之前发生过的请求和响应状态
+* Cookie 会根据服务器端发送的响应报文内首部字段为**Set-Cookie**的信息，通知客户端保存cookie。下次客户端再发送请求时，客户端会自动在请求报文中加入Cookie值后发送出去
+
+### Chapter 3
+#### HTTP报文
+* HTTP报文结构
+    * 报文首部：服务器端或客户端需处理的请求或响应的内容及属性
+    * 空行（区分首部和主体）
+    * 主体：应被发送的数据
+* 报文和实体的差异
+    * 报文 message，是HTTP通信中的基本单位
+    * 实体 entity，作为请求或响应的有效载荷数据被传输。有实体首部和实体报文组成
+    * 通常，报文主体=实体主体。只有当传输中编码时，实体主体的内容变化，才会与报文主体产生差异
+### Chapter 4
+#### 状态码（review）
+* 200 OK
+* 301 Mover Permanently 永久重定向：说明以后应使用新URI
+* 302 临时性重定向：本次用新的URI访问
+* 400 Bad request 请求报文中有语法错误
+* 401 Unauthorized 请求需要通过认证信息
+* 403 Forbidden 对请求资源的访问被服务器拒绝
+* 404 Not Found 服务器上无法找到请求的资源
+
+### Chapter 6
+
+### Chapter 7
+
+### Chapter 10
+
+
+
+# Day 11 20240729
+
+## 网络是怎么连接的 （40 min）
+
+how to read this book：focus on chapter 1；skim the rest （skip the charts and pictures，try to understand concepts）
+
+### Step 1 生成HTTP请求消息
+
+1. 输入URL
+用HTTP协议访问Web服务器时
+http://user:password@www.baidu.com:80/dir/file1.htm
+#user:password可省略  
+#www.baidu.com web服务器域名；如果访问FTP服务器，www则换成ftp  
+#80 端口号，可省略  
+#/dir/file1.htm 文件的路径名
+2. 浏览器解析URL
+3. 文件名路径可省略
+4. HTTP的基本思路
+客户端通过 方法+URI 发送请求消息，服务器通过 状态码 响应消息  
+#http的主要方法：GET POST HEAD OPTIONS PUT DELETE TRACE CONNECT
+5. 生成HTTP的请求消息
+#请求行：请求行+消息头  
+#响应消息：状态行+消息头
+6. 发送消息后收到响应
+    - 200 OK
+    - 301 重定向 302临时性重定向
+    - 4XX 客户端有问题
+        - 400 bad request 语法错误
+        - 401 unauthorized 需要认证
+        - 403 forbidden 服务器拒绝
+        - 404 找不到该资源
+    - 5XX 服务器有问题
+
+### Step 2 向DNS服务器查询Web服务器的IP地址
+1. IP地址基本知识：每个设备都有一个IP地址
+2. 域名和IP地址：机器喜欢数字，so IP地址；但人类不好记数字，so有域名
+3. 查询IP地址：通过DNS服务器，调用了socket库的解析器
+
+### Step 3 DNS服务器接力
+1. 顺藤摸瓜，直到找到存放请求文件的DNS
+2. 缓存：加快响应速度
+
+### Step 4 委托协议栈发消息
+1. 发委托时，需要按指定顺序调用socket库
+
+（本书Chapter1内容结束）
+
+## 命令大全 C16 （16:10-16:30 ）
+* ip、ftp没有  
+* wget类似curl 主要用于下载  
+* ssh重点 难 先了解 以后实践 阿里云vm virtual machine
+* traceroute netstat wget测试 其他阅读
+
+###  ping （见0727 网络测试工具）
+###  traceroute（自习室没网，回家测 0730补充）
+traceroute程序可以列出网络流量从本地系统到指定主机经过的所有**跳（hop）**数
+```bash
+traceroute 域名
+
+➜  notes git:(main) ✗ traceroute jd.com
+traceroute: Warning: jd.com has multiple addresses; using 211.144.24.218
+traceroute to jd.com (211.144.24.218), 64 hops max, 40 byte packets
+ 1  * * *
+ 2  192.168.1.1 (192.168.1.1)  31.554 ms  20.194 ms  20.986 ms
+ 3  180.159.36.1 (180.159.36.1)  23.289 ms *  26.588 ms
+ 4  61.172.65.202 (61.172.65.202)  23.791 ms * *
+ 5  61.152.52.177 (61.152.52.177)  20.116 ms
+    61.172.64.169 (61.172.64.169)  21.821 ms
+    61.152.54.185 (61.152.54.185)  19.010 ms
+ 6  61.152.26.42 (61.152.26.42)  21.621 ms *
+    61.152.24.118 (61.152.24.118)  29.394 ms
+ 7  * * *   #星号待查是啥 #当某个步骤的响应超时时，就会使用星号来表示。 这通常是由于被防火墙过滤、网络故障或者网络设备不返回TTL超时错误消息等原因所导致的。
+ 8  202.97.18.22 (202.97.18.22)  48.171 ms
+    202.97.18.10 (202.97.18.10)  47.862 ms
+^C
+```
+
+###  netstat
+用于检查各种网络设置和统计信息；-ie可检查系统的网络接口
+###  wget 
+用于Web和FTO网站下载文件，可以实现递归下载、后台下载、断点续传等
+
+##  Linux 系统命令及Shell脚本（16:40-17:30） 
+how to read this book：
+1. chapter 6 网络管理 ifconfig dns ping（见0727） 
+2. chapter 7 进程管理（整章）
+### 进程含义
+- 进程：程序的一次执行过程，程序的运行实例，动态
+- 进程的3种状态：运行态、就绪态、阻塞态
+- 进程之间的关系：互斥又同步
+    - 互斥：不能同时进行，必须one by one
+    - 同步：通过某种通信机制实现信息交互
+- 进程和程序的区别：
+    - 程序是动作执行的描述，静态；进程则是实际执行的过程，动态
+    - 类比：做一件事需要列步骤，这些步骤写在静态的纸上，即“程序”；将步骤付诸实施的过程，即“进程”
+### 进程观察之 ps、top
+
+#### 查看进程   ps -ef  VS  ps aux
+
+- ps -ef 比较紧凑
+- ps aux 多显示 %CPU %MEM  使用率 还有 STAT 
+
+```bash
+root@fefb8747976a:/# ps -ef
+UID        PID  PPID  C STIME TTY          TIME CMD
+root         1     0  0 08:06 ?        00:00:00 sleep infinity
+root        27     0  0 08:27 pts/0    00:00:00 /bin/sh
+root@fefb8747976a:/# ps aux
+USER       PID %CPU %MEM    VSZ   RSS TTY      STAT START   TIME COMMAND
+root         1  0.0  0.0   2200  1152 ?        Ss   08:06   0:00 sleep infinity
+root        27  0.0  0.0   2304  1280 pts/0    Ss   08:27   0:00 /bin/sh
+```
+
+#### top 查看动态进程
+ps输出只是当前查询状态下进程瞬间的状态信息，及时动态查看进程用top命令：
+```bash
+top - 08:58:28 up  8:44,  0 users,  load average: 0.20, 0.14, 0.10 #服务器基础信息
+Tasks:   3 total,   1 running,   2 sleeping,   0 stopped,   0 zombie    #当前系统进程概况，一共3个，1个运行，2个休眠
+%Cpu(s):  0.0 us,  0.0 sy,  0.0 ni,100.0 id,  0.0 wa,  0.0 hi,  0.0 si,  0.0 st #CPU信息
+MiB Mem :   7940.8 total,   6526.6 free,    387.0 used,   1027.2 buff/cache     #物理内存的使用状态
+MiB Swap:   1024.0 total,   1024.0 free,      0.0 used.   7364.2 avail Mem      #虚拟内存的使用状态
+
+  PID USER      PR  NI    VIRT    RES    SHR S  %CPU  %MEM     TIME+ COMMAND                                                                                       
+    1 root      20   0    4116   3200   2816 S   0.0   0.0   0:00.03 bash                                                                                          
+   16 root      20   0    4116   3200   2816 S   0.0   0.0   0:00.01 bash                                                                                          
+   27 root      20   0    6680   2688   2304 R   0.0   0.0   0:00.00 top  
+
+# 若要显示更多，可按 字母键 f #没看懂结果
+```
+
+### 进程终止之 kill、killall
+一般kill跟ps一起使用，因为kill后面跟被终止进程的PID，典型的方法是：
+```bash
+kill 进程ID
+```
+
+已知进程A，快速找出其PID的方法：
+```bash 
+ps -ef | grep A     #方法一  
+pidof A             #方法二
+```
+
+kill-l可以查看kill可跟的信号代码，其中常用的有3个：
+    - HUP（重启）
+    - KILL（强行杀掉）
+    - TERM（正常结束）
+
+### 查询进程打开的文件：lsof（list open files）
+
+# Day 10 20240728
+每天5分钟玩转docker  
+read Chapter 2、3、4；the rest not now
+
+## Docker 基础命令
+* 查看已下载到本地的镜像 docker images
+
+```bash
+  notes git:(main) ✗ docker images     #docker images 查看已下载到本地的镜像
+REPOSITORY                 TAG       IMAGE ID       CREATED        SIZE
+ubuntu                     22.04     d04dcc2ab57b   4 weeks ago    69.2MB
+ubuntu                     24.04     ffb64c9b7e8b   7 weeks ago    101MB
+docker/welcome-to-docker   latest    648f93a1ba7d   8 months ago   19MB
+```
+* 查看运行中的容器 docker ps
+```bash
+➜  notes git:(main) ✗ docker ps       #docker ps 查看运行中的容器
+CONTAINER ID   IMAGE                             COMMAND                   CREATED       STATUS       PORTS                  NAMES
+f9d7efe80d21   centos:centos7                    "/bin/bash -c 'echo …"   2 hours ago   Up 2 hours                          centos7
+ce4c47585e31   ubuntu:24.04                      "/bin/bash -c 'echo …"   2 hours ago   Up 2 hours                          ubuntu-2404
+cbadb9479ba5   docker/welcome-to-docker:latest   "/docker-entrypoint.…"   3 hours ago   Up 3 hours   0.0.0.0:8088->80/tcp   welcome-to-docker
+```
+* 搜索docker hub中的镜像（无需开浏览器）`docker search httpd`
+```bash
+docker search httpd 
+NAME                           DESCRIPTION                                      STARS     OFFICIAL
+httpd                          The Apache HTTP Server Project                   4756      [OK]
+paketobuildpacks/httpd                                                          0         
+paketobuildpacks/php-httpd                                                      0              
+mprahl/s2i-angular-httpd24     An S2I image for building and running Angula…   3         
+httpdocker/kubia                       
+```
+
+* ps -a 显示所有的容器，包括已退出的
+```bash
+➜  notes git:(main) ✗ docker run ubuntu:22.04  
+➜  notes git:(main) ✗ docker ps -a           # docker ps -a 显示所有的容器，包括已退出的
+CONTAINER ID   IMAGE                             COMMAND                   CREATED          STATUS                      PORTS                  NAMES
+03c1fb510166   ubuntu:22.04                      "/bin/bash"               26 seconds ago   Exited (0) 26 seconds ago   # ubuntu:22.04 已退出
+```
+* -d后台运行 sleep infinity 让容器保持运行不退出
+
+```bash
+➜  notes git:(main) ✗ docker run -d ubuntu:22.04 /bin/bash -c "sleep infinity" #-d后台运行 sleep infinity 让容器保持运行不退出
+80c1031379a6b2226dd4a3c3c6f068be95f66b051fb71a38c13f63e0d68b6865
+➜  notes git:(main) ✗ docker ps
+CONTAINER ID   IMAGE                             COMMAND                   CREATED          STATUS          PORTS                  NAMES
+80c1031379a6   ubuntu:22.04                      "/bin/bash -c 'sleep…"   7 seconds ago    Up 6 seconds                           awesome_stonebraker
+c27524f572c8   ubuntu:22.04                      "/bin/bash -c 'sleep…"   45 seconds ago   Up 44 seconds  
+```
+
+```bash
+bash -c #-c string If the -c option is present, then commands are read from string.
+➜  notes git:(main) ✗ bash -c "echo hi"
+hi
+```
+* docker stop 停止容器命令
+
+```bash
+docker stop 停止容器命令 ，后跟容器ID或NAMES
+docker rm 删除容器
+docker ps -a 显示所有容器，包括已停止的
+docker run --name 指定容器名字
+➜  notes git:(main) ✗ docker run --name cyy -d ubuntu:22.04 /bin/bash -c "sleep infinity"             
+fefb8747976ad54465d6df6a47824819dc7f5e0a8bc299fae786bf6e66428c5f
+➜  notes git:(main) ✗ docker ps -a                                                       
+CONTAINER ID   IMAGE                             COMMAND                   CREATED         STATUS         PORTS                  NAMES
+fefb8747976a   ubuntu:22.04                      "/bin/bash -c 'sleep…"   6 seconds ago   Up 6 seconds                          cyy
+
+```
+* docker `exec`/`exit` 进入/退出容器
+```bash
+# exec 进入容器
+➜  notes git:(main) ✗ docker exec -it cyy bash #-it表示打开交互终端，进入容器
+# exit 退出容器
+```
+
+* docker logs 查看容器日志
+* docker run -it 
+    * 启动后进入容器，退出后容器自动删除；用于一次性  
+
+
+```bash
+# How to Keep Docker Container Running
+https://kodekloud.com/blog/keep-docker-container-running/
+
+
+docker run -d --name ubuntu-2404  ubuntu:24.04 /bin/bash -c "echo 'Hello World'; sleep infinity"
+docker run -d --name centos7  centos:centos7 /bin/bash -c "echo 'Hello World'; sleep infinity"
+
+
+# How To Fix “bash: ping: command not found” In Ubuntu Docker Containers
+https://medium.com/@devtonight/how-to-fix-bash-ping-command-not-found-in-ubuntu-docker-containers-41c5bf57c69a
+That means the official Ubuntu Docker image comes with bare minimum packages installed. So, unfortunately, famous tools like ping and ifconfig (learn how to install) commands will not be there right after we created a container using the official Ubuntu image. 
+
+How to Fix "bash: ifconfig: command not found" in Ubuntu Docker Containers
+https://devtonight.com/articles/how-to-fix-bash-ifconfig-command-not-found-in-ubuntu-docker-containers
+
+apt-get update; apt install -y iproute2 iputils-ping net-tools dnsutils curl wget git vi 
+```
+
+# Day 9 20240727
+
+>Roadmap  
+>curl  ->  http  ->   dns  ->   tcp/ip   网络
+
+## Linux 系统命令及Shell脚本 
+how to read this book：chapter 6 网络管理`ifconfig` `dns` `ping` chapter 7 进程管理（整章）
+
+### 使用ifconfig检查和配置网卡
+ifconfig命令，可以输出当前系统中所有处于活动状态的网络接口
+```bash
+ifconfig en0
+en0: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
+        options=400<CHANNEL_IO>
+        ether 50:ed:3c:15:9f:a8
+        inet6 fe80::1cc8:afc:bd6b:f4f6%en0 prefixlen 64 secured scopeid 0xb 
+        inet 172.16.2.36 netmask 0xffff0000 broadcast 172.16.255.255
+        nd6 options=201<PERFORMNUD,DAD>
+        media: autoselect
+        status: active
+```
+
+### DNS客户端配置
+/etc/hosts: 记录主机名和IP的对应关系。当主机数量巨大，列表过长导致使用不便，于是DNS系统应运而生。
+但hosts文件仍被保留，用于：1. 加快域名解析：访问网络时，系统会优先查看hosts文件中是否有记录，如有，则不需要请求DNS服务器 2. 方便小型局域网用户使用，如公司内部应用，不需要专门设置DNS服务器
+```bash
+➜  notes git:(main) ✗ cat /etc/hosts
+127.0.0.1       localhost  # IP地址➕域名
+255.255.255.255 broadcasthost
+……
+```
+
+/etc/resolv.conf
+DNS是全互联网上主机名及其IP地址对应关系的数据库.
+nameserver 后面跟DNS服务器的IP地址，可以设置2～3个nameserver，但优先查询第一个
+```bash
+ cat /etc/resolv.conf 
+nameserver 114.114.114.114      #国内主流DNS服务器
+nameserver 8.8.8.8              #国外谷歌的DNS服务器。另，1.1.1.1
+```
+
+### 网络测试工具 ping
+- ping程序作用：测试是否可达另一台主机（是否可以连接其他主机，测网）
+- ping失败的原因：1. 另一台主机故障 2. 防火墙禁止ping，造成包被丢弃
+- ping方式：ping IP地址 或 ping 域名
+- ping程序不会自己停止，control+c 停止；-c 指定ping次数
+- 网络不好时，可以先ping 路由器IP，看局域网 丢包情况，再ping 网址，看到目标网址的丢包情况。
+- 底层：执行ping命令时，主机发送的是ICMP（Internet Control Message Protocol）请求包
+```bash
+断开Wi-Fi时显示如下
+➜  notes git:(main) ✗ ping 172.16.0.1 -c 2
+PING 172.16.0.1 (172.16.0.1): 56 data bytes
+ping: sendto: No route to host      #找不到路由器
+ping: sendto: No route to host
+Request timeout for icmp_seq 0
+```
+
+```bash
+ping www.google.com 
+PING www.google.com (199.59.148.20): 56 data bytes
+Request timeout for icmp_seq 0
+Request timeout for icmp_seq 1
+^C
+--- www.google.com ping statistics ---
+3 packets transmitted, 0 packets received, 100.0% packet loss       #丢包率100%，无法ping
+
+ping 172.16.0.1 #ping图书馆路由器的IP地址
+PING 172.16.0.1 (172.16.0.1): 56 data bytes
+64 bytes from 172.16.0.1: icmp_seq=0 ttl=64 time=18.670 ms
+^C
+--- 172.16.0.1 ping statistics ---
+14 packets transmitted, 14 packets received, 0.0% packet loss       #0丢包率，连接良好，网络状态good
+round-trip min/avg/max/stddev = 11.913/19.552/24.610/3.994 ms
+```
+
+### DNS（Domain Name Server）查询工具 host/dig/nslookup
+host：查询DNS记录。域名作host的参数，命令返回该域名的IP：
+```bash
+➜  notes git:(main) ✗ host www.baidu.com          #host 域名，查询对应的IP地址
+www.baidu.com is an alias for www.a.shifen.com.     #alias表示别名
+www.a.shifen.com has address 180.101.50.242         #ipv4
+www.a.shifen.com has address 180.101.50.188        
+www.a.shifen.com has IPv6 address 240e:e9:6002:15c:0:ff:b015:146f    #ipv6
+www.a.shifen.com has IPv6 address 240e:e9:6002:15a:0:ff:b05c:1278    
+➜  notes git:(main) ✗ host www.baidu.com 1.1.1.1     # 指定服务器（1.1.1.1）查询
+Using domain server:
+Name: 1.1.1.1
+Address: 1.1.1.1#53 #端口号一般都是53
+Aliases: 
+
+www.baidu.com is an alias for www.a.shifen.com.
+www.a.shifen.com is an alias for www.wshifen.com.
+www.wshifen.com has address 103.235.47.188
+www.wshifen.com has address 103.235.46.96
+```
+
+相同功能还有 nslookup,dig:
+```bash
+  notes git:(main) ✗ nslookup www.baidu.com  #nslookup 域名
+Server:         114.114.114.114
+Address:        114.114.114.114#53
+
+Non-authoritative answer:
+www.baidu.com   canonical name = www.a.shifen.com.
+Name:   www.a.shifen.com
+Address: 180.101.50.242
+Name:   www.a.shifen.com
+Address: 180.101.50.188
+
+➜  notes git:(main) ✗ nslookup www.baidu.com 1.1.1.1  # 指定DNS服务器
+Server:         1.1.1.1
+Address:        1.1.1.1#53
+
+Non-authoritative answer:
+www.baidu.com   canonical name = www.a.shifen.com.
+www.a.shifen.com        canonical name = www.wshifen.com.
+Name:   www.wshifen.com
+Address: 103.235.47.188
+Name:   www.wshifen.com
+Address: 103.235.46.96
+```
 
 
 ### 练习：提取某个网址对应的IP地址
@@ -15,10 +586,184 @@ nslookup abc.com | grep 'Address'| grep -v '#'| cut -f2 -d' '| tr '\n' ' '
 #tr 将换行替换为空格，合并为一行 
 ```
 
+```bash
+➜  notes git:(main) ✗ dig www.baidu.com      # dig 域名          
 
 
+;; ANSWER SECTION:
+www.baidu.com.          667     IN      CNAME   www.a.shifen.com.
+www.a.shifen.com.       127     IN      A       180.101.50.188
+www.a.shifen.com.       127     IN      A       180.101.50.242
 
-# 学习和辅导 感悟，兴趣和引导最重要，学习快乐，快乐学习，不要负担！
+;; Query time: 29 msec
+;; SERVER: 114.114.114.114#53(114.114.114.114)
+;; WHEN: Sat Jul 27 16:19:34 CST 2024
+;; MSG SIZE  rcvd: 101
+
+➜  notes git:(main) ✗ dig www.baidu.com @1.1.1.1      # dig 域名 @符号：指定DNS服务器（必须有@）
+;; flags: qr rd ra; QUERY: 1, ANSWER: 4, AUTHORITY: 0, ADDITIONAL: 1
+
+;; OPT PSEUDOSECTION:
+; EDNS: version: 0, flags:; udp: 1232
+;; QUESTION SECTION:
+;www.baidu.com.                 IN      A
+
+;; ANSWER SECTION:
+www.baidu.com.          1184    IN      CNAME   www.a.shifen.com.
+www.a.shifen.com.       14      IN      CNAME   www.wshifen.com.
+www.wshifen.com.        284     IN      A       103.235.46.96
+www.wshifen.com.        284     IN      A       103.235.47.188
+
+;; Query time: 166 msec
+;; SERVER: 1.1.1.1#53(1.1.1.1)
+;; WHEN: Sat Jul 27 16:19:48 CST 2024
+;; MSG SIZE  rcvd: 127
+
+➜  notes git:(main) ✗ dig www.baidu.com @1.1.1.1 +short  # +short：简洁模式
+www.a.shifen.com.
+www.wshifen.com.
+103.235.47.188
+103.235.46.96
+
+#提取上述文本中的IP地址
+➜  notes git:(main) ✗ dig www.baidu.com +short |grep -v '[a-z]'
+180.101.50.188
+180.101.50.242
+# 特征是去掉包含字母的行 grep -v 表示 invert-match 反选
+# -v, --invert-match
+             Selected lines are those not matching any of the specified patterns
+```
+
+curl  1h:  13pm-14pm
+
+## cURL必知必会
+### curl的用途及发音（1.2）
+* curl工具：用于上传和下载URL指定的数据
+* curl 命名：可以see（发音同C）到URL，所以称cURL；also 是个客户端（client），所以cURL
+* curl发音
+    * 同 curl
+    * 作动词 curl sth 指使用非浏览器工具下载URL指定的文件或资源
+
+### 命令行选项（2.1）
+- 短选项  -v指切换到详细（verbose）模式
+```bash
+curl http://baidu.com       #普通显示
+<html>
+<meta http-equiv="refresh" content="0;url=http://www.baidu.com/">
+</html>
+➜  notes git:(main) curl -v http://baidu.com       #加-v verbose
+* Host baidu.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 39.156.66.10, 110.242.68.66
+*   Trying 39.156.66.10:80...
+* Connected to baidu.com (39.156.66.10) port 80
+> GET / HTTP/1.1
+> Host: baidu.com
+> User-Agent: curl/8.6.0
+> Accept: */*
+> 
+< HTTP/1.1 200 OK
+< Date: Sat, 27 Jul 2024 05:09:59 GMT
+< Server: Apache
+< Last-Modified: Tue, 12 Jan 2010 13:48:00 GMT
+< ETag: "51-47cf7e6ee8400"
+< Accept-Ranges: bytes
+< Content-Length: 81
+< Cache-Control: max-age=86400
+< Expires: Sun, 28 Jul 2024 05:09:59 GMT
+< Connection: Keep-Alive
+< Content-Type: text/html
+< 
+<html>
+<meta http-equiv="refresh" content="0;url=http://www.baidu.com/">
+</html>
+* Connection #0 to host baidu.com left intact
+```
+
+* curl 可使用多个单字母选项，如，curl打开详细模式并进行HTTP重定向：
+```bash
+curl -vL  http://jd.com
+curl http://jd.com -Lv
+curl -v -L http://jd.com    三种方式效果一致
+
+-L, --location
+              (HTTP) If the server reports that the requested page has moved to a different location (indicated with a Location:
+              header and a 3XX response code), this option makes curl redo the request on the new place.
+```
+
+### 使用curl详细模式(3.1)
+```bash
+curl -v --silent http://jd.com    ## --silent 静默模式 关闭进度指示器也可以 -s
+* Host jd.com:80 was resolved.
+* IPv6: (none)
+* IPv4: 211.144.24.218, 211.144.27.126, 111.13.149.108  #域名解析DNS，找到对应的IP地址
+*   Trying 211.144.24.218:80... #trying表示正在建立TCP连接
+* Connected to jd.com (211.144.24.218) port 80  #connected表示已连接其中一个IP地址
+> GET / HTTP/1.1        # >表示客户端请求，Line92-96 表示一个完整的HTTP请求
+> Host: jd.com
+> User-Agent: curl/8.6.0
+> Accept: */*
+>                       # 空行表示表头和正文之间的间隔，且该请求没有“正文”
+< HTTP/1.1 301 Moved Permanently        # < 表示服务端响应。301或200表示运行良好
+< Date: Sat, 27 Jul 2024 05:29:47 GMT
+< Content-Type: text/html
+< Content-Length: 178
+< Connection: keep-alive
+< Location: https://www.jd.com
+< Server: jfe
+< Cache-Control: no-cache
+< 
+<html>
+……
+```
+
+* 应用：测试连通性
+curl -v http://xxxx
+如果一直显示trying，则表示无法连接；如果出现了connected，则说明连接成功
+```bash
+➜  notes git:(main) ✗ curl -v --silent http://jd.com:22    
+* Host jd.com:22 was resolved.
+* IPv6: (none)
+* IPv4: 211.144.24.218, 111.13.149.108, 211.144.27.126
+*   Trying 211.144.24.218:22...
+
+* connect to 211.144.24.218 port 22 from 172.16.2.36 port 62744 failed: Operation timed out
+*   Trying 111.13.149.108:22...
+```
+
+```bash
+➜  notes git:(main) ✗ curl -v --silent http://jd.com --trace-time      #显示高精度的时间戳
+13:48:09.985249 * Host jd.com:80 was resolved.
+13:48:09.985651 * IPv6: (none)
+13:48:09.985675 * IPv4: 106.39.171.134, 111.13.149.108, 211.144.27.126
+13:48:09.985740 *   Trying 106.39.171.134:80...
+```
+
+### 用curl下载（3.3）
+* 保存网页 curl -o 
+```bash
+curl -o output.html  http://shanbay.com -Ls
+# -o filename 将网页保存并命名
+# -L location 用于当请求网页内容已转移至新地址，不加-L时，服务器会通过location字段返回新地址；加-L，通过继续请求新地址，获得内容
+# -s silent模式
+```
+
+* 保存网页上的图片
+```bash
+➜  notes git:(main) ✗ curl -O https://assets0.baydn.com/static/img/shanbay_favicon.png -s
+➜  notes git:(main) ✗ open shanbay_favicon.png
+# 保存网页上的图片，可用大写O （-O），省略保存本地的文件名，直接输入其网址
+# open 是MAC电脑特有的命令，相当于双击（打开文件）；可以打开目录、文件、视频、网址、app等, 
+    open http://shanbay.com #浏览器打开网页
+    open . #打开当前目录
+    open .. #打开上级目录
+```
+
+* curl只获取首部
+```bash
+curl -I/--head #Fetch the headers only! 
+```
+>学习和辅导 感悟，兴趣和引导最重要，学习快乐，快乐学习，不要负担！
 
 ```bash
 df: 看到yy 学习笔记，才发现，初学计算机还是需要指导的，不然会浪费很多时间。
@@ -33,10 +778,10 @@ df: 看到yy 学习笔记，才发现，初学计算机还是需要指导的，�
 ```
 
 # Day 8 20240726 
-# 《计算机网络》 谢希仁
+ 《计算机网络》 谢希仁
 ## Chapter 1
 ### 概念：
-- 网络：若干节点（node）和链接这些节点的链路（link）组成。节点可以是计算机、集线器、交换机或路由器
+- 网络：若干节点（_node_）和链接这些节点的链路（link）组成。节点可以是计算机、集线器、交换机或路由器
 - 互联网：网络和网络连接起来（network of networks），构成了覆盖范围更大的网络，即互联网
 - 因特网：世界上最大的互联网络。连接在因特网上的计算机都被称为“主机”。
 
@@ -92,22 +837,24 @@ df: 看到yy 学习笔记，才发现，初学计算机还是需要指导的，�
 - 物理层：physical layer
 
 ## Chapter 2 物理层  #重点是掌握基本概念
-### 物理层的主要任务：确定与传输媒体的接口有关的一些特性：
-    - 机械特性 形状、尺寸、数量排列等
-    - 电气特性 各条线上的电压范围
-    - 功能特性 指明某条线上出现的某一电平的电压表示何种意义
+### 物理层的主要任务  
+* 确定与传输媒体的接口有关的一些特性  
+    - 机械特性 形状、尺寸、数量排列等  
+    - 电气特性 各条线上的电压范围  
+    - 功能特性 指明某条线上出现的某一电平的电压表示何种意义  
     - 过程特性
 
 ### 数据通信基本知识
-#### 数据通信系统可划分为三大部分：
-    - 源系统（发送端、发送方）：
-        - 源点 source 产生要传输的数据
-        - 发送器 典型的发送器是调制器
+* 数据通信系统可划分为三大部分：
+    - 源系统（发送端、发送方）
+        - **源点** source 产生要传输的数据
+        - **发送器** 典型的发送器是调制器
     - 传输系统 传输网络
     - 目的系统（接收端、接收方）
-        - 接收器：典型的是解调器，把模拟信号解调，提取发送端置入的消息
-        - 终点 destination 输出信息 也成目的站、信宿
-通信的目的是传送消息 message，如话音、文字、图像、视频等都是消息；数据data是运送消息的尸体，通常是有意义的符号序列；信号signal是数据的电器或电磁的表现。信号可分为两类：
+        - **接收器**典型的是解调器，把模拟信号解调，提取发送端置入的消息
+        - **终点** destination 输出信息，也称目的站、信宿
+* 通信的目的是传送消息 message，如话音、文字、图像、视频等都是消息
+* 数据data是运送消息的实体，通常是有意义的符号序列；信号signal是数据的电器或电磁的表现。信号可分为两类：
     - 模拟信号，或连续信号：代表消息的参数的取值是连续的 
     - 数字信号，或离散信号：代表消息的参数的取值是离散的 
 
@@ -115,28 +862,28 @@ df: 看到yy 学习笔记，才发现，初学计算机还是需要指导的，�
 - 信道不等于电路，信道一般用来表示某一个方向传送信息的媒体；因此，一条电路往往包含一条发送信道+一条接收信道
 - 来自信源的信号常称为基带信号，多包含低频成分，而信道无法传输，故需要对基带信号进行调制（modulation）
 - 调制Modulation分为两类：
-    - 1. 仅变换基带信号的波形，变换后仍是基带信号，称之为基带调制，或编码 coding
-    - 2. 用载波carrier调制，把基带信号的频率范围搬移到较高的频段，并转换为模拟信号。调制后成为带通信号
+    1. 仅变换基带信号的波形，变换后仍是基带信号，称之为基带调制，或编码 coding
+    2. 用载波carrier调制，把基带信号的频率范围搬移到较高的频段，并转换为模拟信号。调制后成为带通信号
 
 - 常用的编码方式：
-    - 1. 不归零：正电平1 负电平0
-    - 2. 归零：正脉冲1，负脉冲0
-    - 3. 曼彻斯特编码：向上跳0，向下跳1
-    - 4. 差分曼彻斯特：位开始有跳变0，反之1
+    1. 不归零：正电平1 负电平0
+    2. 归零：正脉冲1，负脉冲0
+    3. 曼彻斯特编码：向上跳0，向下跳1
+    4. 差分曼彻斯特：位开始有跳变0，反之1
 
-### 限制码元在信道上的传输速度的因素：
+### 限制码元在信道上的传输速度的因素
 - 信道能够通过的频率范围
 - 信噪比：信号的平均功率和噪声的平均功率之比，S/N 
 信噪比越高，信息的传输速率就越高
 
-### 物理层面下的传输媒体 导引型、非导引型传输媒体
-#### 导引型传输媒体
-- 双绞线：互相绝缘的铜导线；常见电话线；可加抗干扰屏蔽层
+### 物理层面下的传输媒体
+* 导引型传输媒体
+    * 双绞线：互相绝缘的铜导线；常见电话线；可加抗干扰屏蔽层
     绞合线类别，一般数字越大带宽越大
-- 同轴电缆：绝缘保护套层、外导体屏蔽层、绝缘层和内导体构成；良好的抗干扰性
-- 光纤：传输带宽远大于其他传输媒体；低损耗，发展迅速
+    * 同轴电缆：绝缘保护套层、外导体屏蔽层、绝缘层和内导体构成；良好的抗干扰性
+    * 光纤：传输带宽远大于其他传输媒体；低损耗，发展迅速
 
-#### 非导引型 无线传输
+* 非导引型 无线传输  
     红外通信、激光通信，可用于近距离的笔记本电脑相互传输数据
 
 ### 信道复用技术
@@ -149,29 +896,27 @@ df: 看到yy 学习笔记，才发现，初学计算机还是需要指导的，�
 光纤-长途干线最主要的传输媒体，适用于高速率数据业务（如视频会议）和大量复用的低速率业务
 
 ### ADSL技术 Asymmetric Digital SUbscriber Line
-非对称数字用户线技术：用数字技术对现有的模拟电话用户线改造（优点：不需要重新布线）
-    - 0～4kHz 的低频谱留给传统电话；高端频谱用于上网
-    - ADSL的下行（从ISP到用户）带宽远大于上行（用户到ISP），所以非对称；不适合企业
-    - ADSL 传输距离取决于数据率和用户线的线径（线越细，信号衰减越大）
-
+* 非对称数字用户线技术：用数字技术对现有的模拟电话用户线改造（优点：不需要重新布线）  
+    * 0～4kHz 的低频谱留给传统电话；高端频谱用于上网
+    * ADSL的下行（从ISP到用户）带宽远大于上行（用户到ISP），所以非对称；不适合企业
+    * ADSL 传输距离取决于数据率和用户线的线径（线越细，信号衰减越大）
 
 # Day 7 20240725
 
 《UNIX/LINUX/OS X中的Shell编程》 人民邮电出版社
 
 ## Chapter 2 什么是Shell
-内核和实用工具：Unix系统在逻辑上被划分为内核和实用工具（Utility），通常来说，所有的访问都要经过Shell。
-内核是Unix系统的核心所在，内核位于计算机的内存中；组成Unix的各种实用工具位于计算机磁盘中，需要的时候会被加载到内存并执行。
+- 内核和实用工具：Unix系统在逻辑上被划分为**内核**和**实用工具（Utility）**，通常来说，所有的访问都要经过**Shell**。  
+- 内核是Unix系统的核心所在，内核位于计算机的内存中；组成Unix的各种实用工具位于计算机磁盘中，需要的时候会被加载到内存并执行。
 
 ### Shell的功能
-1. 程序执行：Shell负责执行终端中指定的所有程序。
-    每次输入一行内容（正式名称：命令行），Shell会扫描命令行，确定要执行的程序名称及所传入的程序参数。
-
-    Shell会使用一些特殊字符确定程序名称及每个参数的起止，这些字符统称为空白字符（whitespace characters），包括空格符、水平制表符和行尾符（又叫换行符）。连续多个空白会被Shell忽略。
+1. 程序执行：Shell负责执行终端中指定的所有程序。  
+- 每次输入一行内容（正式名称：命令行），Shell会扫描命令行，确定要执行的程序名称及所传入的程序参数。  
+- Shell会使用一些特殊字符确定程序名称及每个参数的起止，这些字符统称为空白字符（whitespace characters），包括空格符、水平制表符和行尾符（又叫换行符）。连续多个空白会被Shell忽略。
 
 ```bash
 mv tmp/mazewars games 
-#Shell会扫描该命令行，提取到 行首 到 第一个空白字符之间的所有命令作为待执行的程序名称：mv。随后的空白字符（多余的空格）会被忽略。
+#Shell会扫描该命令行，提取到行首到 第一个空白字符之间的所有命令作为待执行的程序名称：mv。随后的空白字符（多余的空格）会被忽略。
 #第一、二个空白字符之间的字符，作为mv的第一个参数 tmp/mazewars
 #games 是第二个参数
 ```
@@ -224,16 +969,16 @@ bash-3.2$ who | wc -l  #who的标准输出连接到了wc -l的标准输入
 
 5. 环境控制（Chapter 10展开）
 6. 解释型编程语言
-    - Shell有自己内建的编程语言，这种语言是解释型的，即Shell会分析所遇到的每一条语句，然后执行所发现的有效的命令。
-    - 与C++及Swift不同，这些语言中，程序语句在执行之前会被编译成可由机器执行的形式
-    - 解释型语言一般更易于调试和修改，但耗时较长
+- Shell有自己内建的编程语言，这种语言是解释型的，即Shell会分析所遇到的每一条语句，然后执行所发现的有效的命令。
+- 与C++及Swift不同，这些语言中，程序语句在执行之前会被编译成可由机器执行的形式
+- 解释型语言一般更易于调试和修改，但耗时较长
 
 
 ## Chapter 3 常备工具
 
 ### 正则表达式 （）
 与Shell只能在文件名替换中识别部分正则表达式。 两者区别？
-#### 点号（.）：匹配任意单个字符
+* 点号`.`：匹配任意单个字符
 ```bash
 r. #可以匹配r及任意单个字符
 .x. #可以匹配任意两个字符包围的x，这两个字符不必相同
@@ -282,7 +1027,7 @@ environment that XXXmoted efficient XXXgram
 ##存在的问题：修改结果不可逆；不加g的时候不是每行都替换，很奇怪
 ```
 
-#### 脱字符（^）：匹配行首
+* 脱字符`^`：匹配行首
 如果脱字符作为正则表达式的第一个字符，它可以匹配行首位置。如：
 ```bash
 ^George  # 只能匹配出现在行首的George
@@ -317,7 +1062,7 @@ the design of the Unix system was to create an
 ^development
 ```
 
-#### 美元符号（$）：匹配行尾
+* 美元符号`$`：匹配行尾
 ```bash
 contents$   #可匹配位于行尾的contents
 .$          #可匹配行尾的任意字符
@@ -363,13 +1108,13 @@ the design of the Unix system was to create an
 environment that promoted efficient program
 development.
 ```
-^和$组合使用：
+`^`和`$`组合使用：
 ```bash
 ^$ #匹配空行
 ^ $ #匹配单个空格组成的行
 ```
 
-#### 英文省略号（[...]）：匹配字符组
+* 英文省略号`[...]`：匹配字符组
 ```bash
 [0-9]   #匹配0-9之间的任意数字
 [A-Z]   #匹配大写字母
@@ -377,7 +1122,7 @@ development.
 [^A-Z]      #匹配大写字母以外的任意字符 相当于Shell中的感叹号！
 ```
 
-#### 星号（*）：匹配零个或多个字符
+* 星号`*`：匹配零个或多个字符
 正则表达式中，星号用于匹配零次或多次出现在其之前的正则表达式元素，因此：
 ```bash
 X*      #可以匹配0个或多个大写字母X
@@ -458,19 +1203,20 @@ t
 类似的，[]a-z] 表示匹配又中括号或小写字母
 ```
 
-#### \{...\}：匹配固定次数的子模式
+* `\{...\}`：匹配固定次数的子模式
 ```bash
 \{min,max\}  #min指待匹配的正则表达式需要出现的最小次数，max则为最大次数；且必须用\对花括号进行转义
+
 X\{1,10\}    #指能匹配1-10个连续的X
 [A-Za-z]\{4,7\} #匹配4-7之间的字母字符序列
+
 \{10\}  #花括号之间只有一个数字，表示正则表达式必须匹配的次数
 [a-zA-Z]\{7\}       #能够匹配7个字母字符
+
 .\{10\}     #能够匹配10个任意字符
+
 +\{5,\}     #花括号单个数字紧跟一个逗号，表示至少匹配5次，最多不限。 此处指匹配至少5个连续的+
 ```
-
-#### \(...\)：保存已匹配的字符
-有点太复杂了，先马一下好了
 
 
 # Day 6 20240724 
@@ -478,7 +1224,7 @@ X\{1,10\}    #指能匹配1-10个连续的X
 Linux 脚本学习（自学版）
 
 ## while循环
-结构
+### 结构
 ```bash
 while expression
 do
@@ -498,7 +1244,8 @@ done
 echo
 ```
 
-用while循环计算1-100之和、1-100奇数之和
+练习题：  
+* 用while循环计算1-100之和、1-100奇数之和
 ```bash
 #! /bash/bin
 #sum01计算1-100的和
@@ -520,7 +1267,7 @@ echo "sum01=$sum01"
 echo "sum02=$sum02"
 ```
 
-用while做猜数字游戏，只有输入的数字和预设数字一致时，才会停止循环：
+* 用while做猜数字游戏，只有输入的数字和预设数字一致时，才会停止循环：
 ```bash
 #! /bin/bash
 PRE_SET_NUM=8
@@ -536,7 +1283,8 @@ do
 done
 ```
 
-while 结合 awk 按行读取文件，输出信息，两种方式：
+### while 结合 awk 
+按行读取文件，输出信息，两种方式：
 ```bash
 #创建文件
 John 30 Boy
@@ -544,7 +1292,7 @@ Sue 28 Girl
 Wang 25 Boy 
 Xu 23 Girl
 ```
-第一种(重定向)：
+1. 重定向
 ```bash
 #! /bin/bash
 while  read LINE
@@ -555,7 +1303,7 @@ do
     echo "My name is $NAME, I'm $AGE years old, I'm a $SEX"
 done < student_info.txt
 ```
-第二种（管道）：
+2. 管道
 ```bash
 #! /bin/bash
 cat student_info.txt | while read LINE
@@ -568,6 +1316,7 @@ done
 ```
 
 ## until循环
+## 结构
 until是测试假值的方式（与while相对），直到测试为真时才停止循环，其语法结构与while一致：
 ```bash
 until expression
@@ -576,7 +1325,8 @@ do
 done
 ```
 
-计算1-100之和、1-100奇数之和：
+练习：  
+* 计算1-100之和、1-100奇数之和：
 ```bash
 #! /bash/bin
 #sum01计算1-100的和
@@ -599,6 +1349,7 @@ echo "sum02=$sum02"
 ```
 
 ## case 判断结构
+### 结构
 和if/elif/else结构一样，case判断结构也可以用于多种可能情况下的分支选择，其语法结构如下：
 ```bash
 case VAR in
@@ -819,14 +1570,14 @@ Call function sayHello
 Hello
 ```
 
-# 《UNIX/LINUX/OS X中的Shell编程》 人民邮电出版社 开始学习
-## Chapter 1 基础概述
-### date命令：显示日期和时间
+## 《UNIX/LINUX/OS X中的Shell编程》 人民邮电出版社 开始学习
+### Chapter 1 基础概述
+- date命令：显示日期和时间
 ```bash
 ➜  ~ date
 2024年 7月24日 星期三 15时33分35秒 CST
 ```
-### who命令：找出已登录人员
+- who命令：找出已登录人员
 ```bash
 ➜  ~ who
 cyy              console       7  3 22:17 
@@ -835,7 +1586,7 @@ cyy              console       7  3 22:17
 ➜  ~ who am i
 cyy                            7 24 15:35 
 ```
-### echo命令：回显字符
+- echo命令：回显字符
 echo命令会在终端打印出（或者回显）在行中输入的所有内容
 ```bash
 ➜  ~ echo this is a test
@@ -847,8 +1598,8 @@ why not print out a longer line with echo?
 ➜  ~ echo one    two      three four
 one two three four
 ```
-### ls命令：查看目录下的文件
-### cat命令：检查文件内容 concatenate
+- ls命令：查看目录下的文件
+- cat命令：检查文件内容 concatenate
 ```bash
 ➜  notes git:(main) ✗ cat forlist.sh
 #! /bash/bin
@@ -857,7 +1608,7 @@ do
     echo "Loop $VAR times"
 done%  
 ```
-### wc命令：统计文件中单词数量
+- wc命令：统计文件中单词数量
 wc命令可以获得文件中的行数、单词数和字符数
 ```bash
 ➜  g cat ls_usr.txt
@@ -868,7 +1619,7 @@ drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
 ➜  g wc ls_usr.txt
        4      29     163 ls_usr.txt
 ```
-### 命令选项 -，后面直接跟字母
+- 命令选项 -，后面直接跟字母
 如要计算文件中包含的行数，可以用“wc -l”; 字符数可以用 -c选项；单词数 -w选项
 ```bash
 ➜  g wc -l ls_usr.txt  #-l选项 行数
@@ -879,7 +1630,7 @@ drwxr-xr-x  23 cyy  staff  736  7 24 11:42 notes
       29 ls_usr.txt
 ```
 
-### cp命令：复制文件
+- cp命令：复制文件
 ```bash
 cp names saved_names  #names表示源文件，saved_names表示目标文件
 ```
@@ -891,12 +1642,11 @@ ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.
 ls_no_usr.txt notes         sort.txt      testhello.txt
 ls_usr.txt    sayHello.sh   sortcp.txt    uniq.txt
 ```
-### mv命令：文件重命名/移动
-重命名
+- mv命令：文件重命名/移动
+    1. 重命名
 ```bash
 mv old_name new_name
-```
-```bash
+
 ➜  g ls
 ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.txt uniq.txt
 ➜  g mv sort.txt sortmv.txt
@@ -904,9 +1654,9 @@ ls_no_usr.txt ls_usr.txt    notes         sayHello.sh   sort.txt      testhello.
 ls_no_usr.txt notes         sortcp.txt    testhello.txt
 ls_usr.txt    sayHello.sh   sortmv.txt    uniq.txt
 ```
-
-移动
-mv oldNamefile newNamefile 移动 #移动没搞懂 解答 ../上级目录，./同级目录
+  
+    2. 移动
+        mv oldNamefile newNamefile 移动 #移动没搞懂 解答 ../上级目录，./同级目录
 ```bash
 ➜  g mv sortmv.txt ./notes
 ➜  g ls
@@ -919,14 +1669,16 @@ IELTS.md         forlist03.sh     learnfor.sh      sortmv.txt       while01.sh
 README.md        fruit01.sh       learnif.sh       student_info.txt while02.sh
 ```
 
-### rm命令：删除文件
+* rm命令：删除文件
 ```bash
 rm names
-```
-rm也可以一次性删除多个文件，空格隔开即可
 
-### mkdir命令：创建目录
-### 目录之间复制(cp)、移动（mv）文件
+#rm也可以一次性删除多个文件，空格隔开即可
+```
+
+
+* mkdir命令：创建目录
+* 目录之间复制(cp)、移动（mv）文件
 ```bash
 cp oldd/name1 newd/name2 
 #同级目录格式
@@ -934,7 +1686,7 @@ cp oldd/name1 newd/name2
 #因为在不同目录中，名字可以相同，此时可以仅指定目录：
 cp oldd/name1 newd
 ```
-### ln命令：文件链接
+* ln命令：文件链接
 创建链接，可以克服cp 占2倍磁盘空间、只改了一处另一处忘记改的风险问题
 ```bash
 ➜  g2 ls
@@ -961,8 +1713,8 @@ drwxr-xr-x  3 cyy  staff  96  7 20 14:53 899
 #两个链接文件可以任意删一个，另一个不会随之消失，删除后第2列会显示1
 ```
 
-### rmdir命令：删除目录 有危险不用
-### 文件名替换 星号 *
+* rmdir命令：删除目录 有危险不用
+* 文件名替换 星号`*`
 星号可以匹配当前目录下 所有 的文件名
 ```bash
 #如果用cat，则会显示所有的文件内容
@@ -980,7 +1732,7 @@ chapt1 chapt2 chapt3 chapt4
 ➜  star echo ch*pt1
 chapt1
 ```
-### 匹配单个字符
+* 匹配单个字符
 星号：可以匹配0个或多个字符，也就是x*，可以匹配文件x、x1、xabc
 问号：仅能匹配单个字符
 ```bash
@@ -1011,7 +1763,7 @@ report1 report2 report3
 ➜  star02 echo [!br]* #匹配非b或r开头的文件，不work
 zsh: event not found: br]
 ```
-### 空格问题
+* 空格问题
 如果文件名中有空格，直接cat+文件名会报错，2种解决方式：
 ```bash
 ➜  star02 cat my test document 
@@ -1022,7 +1774,7 @@ cat: document: No such file or directory
 ➜  star02 cat "my test document"   #文件名加引号，单双都可以
 ➜  star02 cat 'my test document'
 ```
-### 标准输入
+* 标准输入
 sort 排序不work  #待修正
 
 ## Install ohmyzsh
@@ -1039,15 +1791,16 @@ bash-3.2$ echo $SHELL
 /bin/zsh
 ```
 
-
-# Day 5 20240723 Linux 脚本学习（自学版）
+# Day 5 20240723 
+Linux 脚本学习（自学版）
 ## 变量：
-变量命名：Shell中的变量必须以字母或下划线开头，后面可以跟数字、字母或下划线，变量长度没有限制。但要注意以下两类错误类型：
-a. PS1 #变量不能和Shell的预设变量名重名  
-b. for #变量不能使用Shell的关键字
+### 变量命名
+Shell中的变量必须以字母或下划线开头，后面可以跟数字、字母或下划线，变量长度没有限制。但要注意以下两类错误类型：  
+1. PS1 #变量不能和Shell的预设变量名重名  
+2. for #变量不能使用Shell的关键字
 
-## 定义变量：变量名=变量值
-#注意1: 变量名和变量值之间用等号紧紧相连，之间没有任何空格；变量值也可以加引号（单双都可以）
+### 定义变量：变量名=变量值
+- 注意1: 变量名和变量值之间用等号）
 ```bash
 cyy@mac %  name=john
 cyy@mac % name = john
@@ -1058,7 +1811,7 @@ zsh: command not found: jonh
 cyy@mac % name='john'
 cyy@mac % name="john"
 ```
-#注意2: 变量值如果有空格，必须加引号，否则会报错
+- 注意2: 变量值如果有空格，必须加引号，否则会报错
 ```bash
 cyy@mac % name=john wang
 zsh: command not found: wang
@@ -1066,14 +1819,17 @@ zsh: command not found: wang
 cyy@mac % name='john wang'
 ```
 
-变量的取值：变量名前加上$符号，严谨一点的写法是 ${} 
+变量的取值：变量名前加上`$`符号，严谨一点的写法是`${}` 
+
 ```bash
 cyy@mac % echo $name
 john wang
 cyy@mac % echo ${name}
 john wang
 ```
-#区分以下两种赋值：若要打印“sue Hello”，变量需按标准格式➕{},如果没有，Shell语法自动将等号后的内容解释为变量（sue Hello），又因“sue Hello”并未声明，所以值为空
+
+区分以下两种赋值：若要打印“sue Hello”，变量需按标准格式➕{},如果没有，Shell语法自动将等号后的内容解释为变量（sue Hello），又因“sue Hello”并未声明，所以值为空
+
 ```bash
 cyy@mac % name='sue '
 cyy@mac % echo $nameHello
@@ -1081,13 +1837,14 @@ cyy@mac % echo $nameHello
 cyy@mac % echo ${name}Hello
 sue Hello
 ```
-##由以上可知，Shell具有“弱变量性”，即在没有预先声明变量的时候也可以引用，且没有任何报错或者提醒，可能会造成脚本中引用不正确的变量，从而导致脚本异常但很难找出原因。在这种情况下，可以设置脚本运行时必须遵循“先声明再使用”的原则，这样一旦脚本中出现未声明的变量情况则会立刻报错：
+
+由以上可知，Shell具有“弱变量性”，即在没有预先声明变量的时候也可以引用，且没有任何报错或者提醒，可能会造成脚本中引用不正确的变量，从而导致脚本异常但很难找出原因。在这种情况下，可以设置脚本运行时必须遵循“先声明再使用”的原则，这样一旦脚本中出现未声明的变量情况则会立刻报错：
 ```bash
 cyy@mac % shopt -s -o nounset
 zsh: command not found: shopt   ##问题
 ```
 
-取消变量：unset
+### 取消变量：unset
 ```bash
 cyy@mac % name=john
 cyy@mac % echo $name
@@ -1116,7 +1873,6 @@ cyy@mac % Score[1]=('30' '40')
 cyy@mac % declare Score       
 Score=( 30 40 90 100 120 )
 ```
-
 
 ## 引用
 Shell中共有4种引用符，分别是双引号（部分引用或弱引用）、单引号（全引用或强引用）、反引号（将括起的内容解释为系统命令）、转义符（\）
@@ -1164,7 +1920,7 @@ cyy@mac % echo $DATE_02
 2024年 7月23日 星期二 13时48分03秒 CST
 ```
 
-反引号可与 $() 等价，因反引号与单引号看起来类似，时常对差看代码造成困难，所以使用 $() 就相对清晰：
+反引号可与`$()` 等价，因反引号与单引号看起来类似，时常对差看代码造成困难，所以使用`$()`就相对清晰：
 ```bash
 cyy@mac % LS=`ls -l`
 cyy@mac % echo $LS
@@ -1180,10 +1936,10 @@ drwxr-xr-x  12 cyy  staff    384  7 20 23:19 0720-tmp-files
 -rwxr-xr-x   1 cyy  staff     56  7 22 22:06 HelloWorld.sh
 -rw-r--r--   1 cyy  staff   2498  7 17 13:42 IELTS.md
 ```
-另外，$() 支持嵌套，而反引号不行；$() 仅可在Bash Shell中有效，而反引号可在多种UNIX SHELL中使用。所以各有特点，选哪个看需要和个人喜好
+另外，`$()`支持嵌套，而反引号不行；`$()`仅可在Bash Shell中有效，而反引号可在多种UNIX SHELL中使用。所以各有特点，选哪个看需要和个人喜好
 
 ## 运算符
-算术运算符
+### 算术运算符
 ```bash
 cyy@mac % let I=2+2    #work
 cyy@mac % echo $I
@@ -1219,11 +1975,9 @@ zsh: no matches found: A=2*3
 cyy@mac % let B=2*3
 zsh: no matches found: B=2*3
 ```
+### 位元算符存疑(忽略)
 
-位元算符存疑
-
-
-使用$[]做运算：$[] 与 $(()) 类似，可用于简单的算术运算：
+使用`$[]`做运算：`$[]`与`$(())`类似，可用于简单的算术运算：
 ```bash
 cyy@mac % echo $[1+1]
 2
@@ -1232,6 +1986,7 @@ cyy@mac % echo $[2*2]
 cyy@mac % echo $[5**2]
 25
 ```
+### expr 运算
 使用expr做运算：expr也可用于整数运算。与其他算数运算不同，expr要求操作数和操作符之间使用空格隔开（否则只会打印出字符串），所以特殊的操作符要使用转义符转义（如*）。
 expr支持加减乘除余等：
 ```bash
@@ -1245,7 +2000,7 @@ cyy@mac % expr 2 \* 2
 4
 ```
 
-内建运算命令 declare
+### 内建运算命令 declare
 declare是shell的内建命令，通过它也能进行整数运算，但使用declare显示定义整数变量（-i 参数指定变量为“整数”），再进行赋值。如不定义，赋值“1+1”便是简单的字符串，与“1+1”无异：
 ```bash
 #不用declare定义变量
@@ -1261,8 +2016,8 @@ cyy@mac % echo $J
 #注意，Shell中的算术运算要求 运算符和操作数之间不能有空格；特殊符号也不需要转义；算术表达式中含有其他变量也不需要用$引用。
 ```
 
-算术扩展：shell内建命令之一，整数变量的运算机制，基本语法：
-$((算术表达式))
+### 算术扩展：shell内建命令之一
+整数变量的运算机制，基本语法：```$((算术表达式))```  
 其中，算术表达式由变量和运算符组成，常见的用法是显示输出和变量赋值。若表达式中的变量没有定义，则计算时，其值会被假设为0（但不会真的因此赋0值给该变量）：
 ```bash
 cyy@mac % i=2
@@ -1283,23 +2038,21 @@ cyy@mac % echo $var
 ```
 
 ## 通配符
+通配符用于模式匹配，常见的通配符有`*`、`？`和`[]`括起来的字符序列。其中：  
+* `*`代表任意长度的字符串，但不包括点号和斜线号，也就是`a*`无法匹配`abc.txt`。  
+* `？`可用于匹配任何一个单一字符。
+* `[]`代表匹配其中的任意一个字符，如`[abc]`表示可以匹配a或者b或者c
+* `[]`中可以用`-`表明起止，如`[a-c]`等同于`[abc]`  
+    *但注意， `-`在`[]`外只是一个普通字符，没有任何特殊作用；`*`和`？`在`[]`中则变成了普通字符，没有通配的功效
 
-```bash
-通配符用于模式匹配，常见的通配符有*、？和[]括起来的字符序列。其中：
-*代表任意长度的字符串，但不包括点号和斜线号，也就是a*无法匹配abc.txt。
-？可用于匹配任何一个单一字符。
-[]代表匹配其中的任意一个字符，如[abc]表示可以匹配a或者b或者c；[]中可以用 - 表明起止，如[a-c]等同于[abc]
-但注意， - 在[]外只是一个普通字符，没有任何特殊作用；*和？在[]中则变成了普通字符，没有通配的功效
-```
-
-大括号：匹配多个排列组合的可能
+* `{}`大括号：匹配多个排列组合的可能:
 ```bash
 cyy@mac % echo {x1,x2}{y1,y2}
 x1y1 x1y2 x2y1 x2y2
 ```
 
 ## 测试
-$?:判断文件是否存在
+`$?`判断文件是否存在
 ```bash
 cyy@mac % ls /Users/cyy/g/notes
 0720-tmp-files  IELTS.md        learnfor.sh     learnwhile.sh   test2.md
@@ -1345,16 +2098,16 @@ if [ "$SCORE" -ge 80 ]; then
     echo "A"
 fi
 ```
-#！expression （逻辑测试）表示如果expression为真，则测试结果为假
-#expression 1 -a expression 2 （逻辑测试）表示expression 1和2同时为真，则测试结果为真 （逻辑运算：&&）
-#expression 1 -o expression 2 （逻辑测试）表示expression 1和2只要有1个为真，则测试结果为真（逻辑运算：||）
+* ！expression （逻辑测试）表示如果expression为真，则测试结果为假
+* *expression 1 -a expression 2 （逻辑测试）表示expression 1和2同时为真，则测试结果为真 （逻辑运算：&&）
+* expression 1 -o expression 2 （逻辑测试）表示expression 1和2只要有1个为真，则测试结果为真（逻辑运算：`||`）
 
-#-eq 等于；
-#-gt great than 大于 
-#-lt less than 小于
-#-ge great equal 大于等于
-#-le less equal 小于等于
-#-ne not equal 不等于
+>-eq 等于；  
+>-gt great than 大于     
+>-lt less than 小于  
+>-ge great equal 大于等于  
+>-le less equal 小于等于  
+>-ne not equal 不等于
 
 
 ### if/else语句 判断文件是否存在
@@ -1408,8 +2161,8 @@ do
 done
 ```
 
-### 结合seq命令针求和
-1-100求和
+### 结合seq命令求和
+* 1-100求和
 ```bash
 #! /bin/bash
 sum=0
@@ -1420,7 +2173,7 @@ do
 done
 echo "Total: $sum"
 ```
-求1-100奇数的和
+* 求1-100奇数的和
 ```bash
 #! /bin/bash
 sum=0
@@ -1432,10 +2185,10 @@ done
 echo "Total: $sum"
 ```
 
-
-# Day 4 20240722 Linux Shell脚本学习
+# Day 4 20240722 
+Linux Shell脚本学习
 ## 简单脚本的创建和执行 第一个shell脚本：输出 hello world
-1. 创建文件：cyy@mac % code HelloWorld.sh
+### 创建文件：cyy@mac % code HelloWorld.sh
 Shell脚本永远以“#!”开头，这是一个脚本开始的标记，表示系统执行这个文件需要使用某个解释器（常见的解释器有sh、bash），后面的/bin/bash指明了解释器的具体位置
 ```bash
 cyy@mac % cat HelloWorld.sh
@@ -1443,13 +2196,13 @@ cyy@mac % cat HelloWorld.sh
 #This line is a comment
 echo "Hello World"
 ```
-2. 运行脚本：
-第一种: bash + 脚本
+### 运行脚本：
+1. bash + 脚本
 ```bash
 cyy@mac % bash HelloWorld.sh 
 Hello World
 ```
-第二种：添加可执行权限（chmod +x ➕脚本），然后使用“./”运行
+2. 添加可执行权限（chmod +x ➕脚本），然后使用“./”运行
 ```bash
 cyy@mac % ./HelloWorld.sh
 zsh: permission denied: ./HelloWorld.sh
@@ -1459,7 +2212,7 @@ Hello World
 ```
 
 ## if 语句
-if➕空格 [空格 "……" 空格];空格 then
+### if➕空格 [空格 "……" 空格];空格 then
 ```bash
 #!/bin/bash
 SCORE=70
@@ -1467,7 +2220,7 @@ if [ "$SCORE" -lt 60 ]; then
 echo "C"
 fi
 ```
-if/esle语句
+### if/esle语句
 ```bash
 #!/bin/bash
 SCORE=70
@@ -1479,7 +2232,7 @@ fi
 ```
 
 ## for循环
-基础版
+### 基础版
 ```bash
 #!/bin/bash
 for i in a b c d 1 2 3
@@ -1488,7 +2241,7 @@ do
 done
 ```
 
-加if/else版
+### 加if/else版
 ```bash
 for i in 50 60 70
 do 
@@ -1501,7 +2254,7 @@ do
 done
 ```
 
-seq,输出序列
+### seq,输出序列
 ```bash
 cyy@mac % seq 3
 1
@@ -1517,7 +2270,7 @@ do
 done
 ```
 
-“$(命令)”表示获取该命令的结果 to get the result of the command
+### “$(命令)”表示获取该命令的结果 to get the result of the command
 ```bash
 cyy@mac % for i in $(ls)
 do
@@ -1533,8 +2286,8 @@ test2.md
 ```
 
 ## while循环 按行读取文件 常用于处理格式化数据
-两种读取文件的方式：
-第一种 done后接重定向
+### 两种读取文件的方式：
+1. done后接重定向
 ```bash
 #! /bin/bash
 while read line
@@ -1543,7 +2296,7 @@ do
     echo
 done < learnif.sh
 ```
-第二种 while前用cat+管道
+2. while前用cat+管道
 ```bash
 cat learnif.sh | while read line
 do 
@@ -1551,7 +2304,6 @@ do
     echo
 done 
 ```
-
 
 wc表示统计文件的行数（-l）、单词数（-c）和大小
 ```bash
@@ -1572,15 +2324,9 @@ do
 done  | sort -r -t "," -k 2 -n
 ```
 
-
-
-
-
-
-
-
-# Day 3 20240720 Linux 系统命令及Shell脚本实践指南
-- 生成某个文件并添加特定内容 echo
+# Day 3 20240720 
+Linux 系统命令及Shell脚本实践指南
+## 生成某个文件并添加特定内容 echo
 ```bash
 # 重定向 > 添加并覆盖原有； 追加 >> 最后添加
 ehco ABCD > abc.txt 
@@ -1596,7 +2342,7 @@ The cat's name is Tom,what's the mouse's name?
 The
 ```
 
-grep
+## grep
 ```bash
 #创建一个文本文件
 cyy@mac g % cat tomAndJerry.txt
@@ -1645,7 +2391,7 @@ The mouse's NAME is Jerry
 
 ```
 
-sort
+## sort
 ```bash
 #创建文件
 cyy@mac g % echo b:3 \\nc:2 \\na:4 \\ne:5 \\nd:1 \\nf:11 > sort.txt
@@ -1702,7 +2448,7 @@ f:11
 
 ```
 
-uniq
+## uniq
 ```bash
 #创建文件,除先touch创建txt再ehco编辑内容外，还可以code ➕ 文件名 ➕回车，然后编辑器内编辑内容
 abc
@@ -1734,7 +2480,7 @@ cyy@mac g % cat uniq.txt | sort | uniq -c
    2 abc
 ```
 
-cut截取文本，处理的对象是“一行”
+## cut截取文本，处理的对象是“一行”
 
 ```bash
 创建文件 找出示例文件的前5行
@@ -1773,7 +2519,7 @@ _taskgated
 
 ```
 
-tr 文本替换
+## tr 文本替换
 ```bash
 # 把所有小写字母转换为大写字母
 cyy@mac g % cat cut.txt |tr '[a-z]' '[A-Z]'
@@ -1816,7 +2562,7 @@ cyy@mac g % echo aa,b,,b,,,cc,,,,,,dd | tr  -d '[a-z]'
 
 ```
 
-paste 文本合并
+## paste 文本合并
 
 ```bash
 # 创建a.txt b.txt并合并
@@ -1850,7 +2596,7 @@ b52
 c53
 
 ```
-sed 
+## sed 
 创建文件
 ```bash
 this is line1,this is First line
@@ -1900,7 +2646,7 @@ this is LINE 4,this is Third line
 this is LINE 5, this is Fifth line% 
 ```
 
-awk 基于列的文本处理工具（与sed相对，sed是基于行的文本处理工具）
+## awk 基于列的文本处理工具（与sed相对，sed是基于行的文本处理工具）
 
 创建文本
 ```bash
@@ -2006,9 +2752,8 @@ this is line 4,this is Third line
 this is line 5, this is Fifth line% 
 ```
 
-
-
-# Day2 20240715  Linux实操篇 实用指令
+# Day 2 20240715  
+## Linux实操篇 实用指令
 - P24 pwd 显示当前工作目录的绝对路径
 - ls -a 显示当前目录所有的文件和目录，包括隐藏的
   -l 列表形式显示
@@ -2031,7 +2776,7 @@ mv指令 移动或重命名 重命名：
     mv oldNamefile newNamefile 移动 #移动没搞懂 解答 ../上级目录，./同级目录
 
 
-# pbpaste and pipe
+## pbpaste and pipe
 ```
 # This will copy all the content within a file.
 $ cat myfile.txt | pbcopy
@@ -2047,31 +2792,27 @@ grep xxx -r .
 
 ctrl + v  stop 
 
-# open from Terminal 
+## open from Terminal 
 
 ```
 cd g/notes
 code .
 ```
 
+# Day 1 20240714 
+Learn Linux 
 
+* git status; git add .; git commit -m "$( date "+%Y-%m-%d %T")"; git push
 
-# Day 1 20240714  Learn Linux 
-
-git status; git add .; git commit -m "$( date "+%Y-%m-%d %T")"; git push
-
-
-command+j open terminal
+* command+j open terminal
 
 day 1 practice git
-
 
 https://www.runoob.com/linux/linux-system-contents.html
 
 https://www.runoob.com/linux/linux-file-attr-permission.html
 
 https://www.runoob.com/linux/linux-file-content-manage.html
-
 
 https://www.runoob.com/linux/linux-vim.html 
 
