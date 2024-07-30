@@ -1,0 +1,38 @@
+== Info: Host jd.com:80 was resolved.
+== Info: IPv6: (none)
+== Info: IPv4: 211.144.27.126, 106.39.171.134, 111.13.149.108
+== Info:   Trying 211.144.27.126:80...
+== Info: Connected to jd.com (211.144.27.126) port 80
+=> Send header, 69 bytes (0x45)
+0000: GET / HTTP/1.1
+0010: Host: jd.com
+001e: User-Agent: curl/8.6.0
+0036: Accept: */*
+0043: 
+<= Recv header, 32 bytes (0x20)
+0000: HTTP/1.1 301 Moved Permanently
+<= Recv header, 37 bytes (0x25)
+0000: Date: Sat, 27 Jul 2024 05:47:40 GMT
+<= Recv header, 25 bytes (0x19)
+0000: Content-Type: text/html
+<= Recv header, 21 bytes (0x15)
+0000: Content-Length: 178
+<= Recv header, 24 bytes (0x18)
+0000: Connection: keep-alive
+<= Recv header, 30 bytes (0x1e)
+0000: Location: https://www.jd.com
+<= Recv header, 13 bytes (0xd)
+0000: Server: jfe
+<= Recv header, 25 bytes (0x19)
+0000: Cache-Control: no-cache
+<= Recv header, 2 bytes (0x2)
+0000: 
+<= Recv data, 178 bytes (0xb2)
+0000: <html>
+0008: <head><title>301 Moved Permanently</title></head>
+003b: <body bgcolor="white">
+0053: <center><h1>301 Moved Permanently</h1></center>
+0084: <hr><center>nginx</center>
+00a0: </body>
+00a9: </html>
+== Info: Connection #0 to host jd.com left intact

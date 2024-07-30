@@ -1,0 +1,8 @@
+#! /bin/bash
+filename=DNS.list
+
+cat $filename | while read Line
+do
+    ip = ‘dig ${Line}’
+    echo $ip >> DNS.resolve
+done
