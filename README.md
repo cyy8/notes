@@ -1,50 +1,113 @@
-# notes
+# notes 
 
 My GitHub：https://github.com/cyy8/notes
 
 golang: https://go.dev/tour/basics/1
 
-https://github.com/able8/vscode-config/tree/master
+
+# Day 16 20240804
+
+## 阿里云 Aliyun
+
+### What & Why
+- 云计算，简称“云”，是指通过网络使用公共的计算资源，包括服务器、数据存储、网络等
+- 云计算是IT行业的基础设施，也是当前的热点，越来越多的公司将其业务迁移到云上
+- 阿里云是云计算服务平台，为用户提供计算、存储等服务
+
+### [云服务器ECS](https://help.aliyun.com/zh/ecs/getting-started/getting-started?spm=a2c4g.11186623.0.0.2c416472NxQeNh)
+
+- ECS 就是阿里云的云服务器，即虚拟机 VM。
+- 云服务器ECS（Elastic Compute Service）， 是阿里云提供的弹性扩展的IaaS级别云计算服务，让您像使用水、电等公共资源一样便捷、高效地使用服务器
+- 免去了您采购IT硬件的前期准备，实现计算资源的即开即用和弹性伸缩。
+
+#### 云服务器的计费方式
+
+* 按量付费，先使用，后付费，按照各计费项的实际用量结算费用，。
+* 包年包月，包周期预付费方式，按订单的购买周期计费。
+
+####  Linux系统实例快速入门
+
+https://help.aliyun.com/zh/ecs/getting-started/quick-start-for-linux-instances?spm=a2c4g.11186623.0.i23
 
 
+#### [SSH密钥对](https://help.aliyun.com/zh/ecs/user-guide/overview-ssh?spm=a2c4g.11186623.0.i2)
 
-# Linux/Mac 安装软件/管理
-
-- Mac,  brew;  brew install htop
-- Ubuntu, apt; apt update; apt install -y htop
-- Centos, yum; yum -y install htop  
-
-Centos7 issue: mirrorlist.centos.org no longer resolve?
-https://serverfault.com/questions/1161816/mirrorlist-centos-org-no-longer-resolve
-To resolve the issue you can mass update all .repo files:
-
+- 通过SSH密钥对，实现免密码远程登录
+- 在Linux实例中，公钥内容放在 ~/.ssh/authorized_keys 文件
+- https://ecs.console.aliyun.com/keyPair/region/cn-hangzhou
+- 生成SSH密钥对 `ssh-keygen`
 ```sh
-sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
-sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
-sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+➜  ssh-keygen
+Generating public/private ed25519 key pair.
+Enter file in which to save the key (/Users/cyy/.ssh/id_ed25519): id_rsa
 ```
 
-### mac install brew
+- 把公钥（id_rsa.pub）上传到机器 `~/.ssh/authorized_keys` 文件
 
 ```sh
-/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+vi /root/.ssh/authorized_keys
 ```
 
-# awk 使用**关联数组**做统计
+- 不登录的情况下，在远程服务器执行简单命令
 
 ```sh
-iphone,3
-iphone,2
-ipad,4
-ipad,5
-imac,2
-imac,1.1
-
-cat test1 | awk -F ',' '{sum[$1]+=$2}END{ for (i in sum) print i,sum[i]}' 
-iphone 5
-imac 3.1
-ipad 9
+➜  .ssh ssh ecs uptime
+ 15:33:24 up 51 min,  3 users,  load average: 0.00, 0.00, 0.00
+➜  .ssh ssh ecs echo hi
+hi
 ```
+
+#### 通过密钥认证登录Linux实例
+
+- ssh root@<IP> 或者 使用 .ssh/config 文件保存信息
+- 登录：`ssh ecs`
+- 查看 config 文件
+
+```sh
+➜  ~ cat .ssh/config 
+# 输入ECS实例的别名，用户SSH远程连接。
+Host ecs
+# 输入ECS实例的公网IP地址。
+HostName 47.**.**.140
+# 输入端口号，默认为22。
+Port 22
+# 输入登录账号。
+User root
+```
+
+#### 使用scp复制文件到远程主机
+- scp Secure copy program 安全复制程序，使用ssh传输
+- scp格式为：
+    - `scp filename user@remotehost:/home/path` 从本机复制到远程服务器
+    - `scp user@remotehost:/home/path/filename .` 从远程服务器复制到本机
+- scp -r 复制目录
+```sh
+➜  ~ scp test.txt ecs:/root #从本机复制到远程服务器
+test.txt                                                100%    0     0.0KB/s   00:00
+```
+```sh
+➜  ~ scp ecs:/root/test.txt . #从服务器复制到本机的当前目录， `.`表示当前目录
+➜  ~ scp ecs:/root/test.txt test2.txt #将服务器文件复制到本地（默认当前目录），并重命名
+```
+
+#### [安全组](https://help.aliyun.com/zh/ecs/user-guide/after-the-security-group?spm=a2c4g.11186623.0.0.c2f248f0NuADm1)
+
+- 安全组是一种虚拟防火墙，能够控制ECS实例的出入站流量。
+- 安全组的入方向规则控制ECS实例的入站流量，出方向规则控制ECS实例的出站流量。
+
+
+### 阿里云对象存储 OSS（Object Storage Service）
+
+低成本、高可靠的云存储服务。
+
+#### [什么是云存储？](https://www.aliyun.com/getting-started/what-is/what-is-cloud-storage?spm=a2c4g.11186623.0.0.9eae1eb70RClYA)
+- 云存储是一种数据存储在远端服务器集群在线访问的存储类型，用户无需关注存储位置。
+- 云存储服务提供商负责安全地存储、管理和维护存储服务器、基础设施和网络。
+- 基于高度虚拟化的基础架构云存储可以提供广泛的弹性来应对不确定性的容量和性能的诉求。
+- 
+
+#####  对象存储（Object Storage）
+对象存储适用于存储和管理大量非结构化数据，如图片、视频、音频、文档等。数据以对象的形式存储，并具有自定义的元数据，使数据更易于访问和管理。对象存储不像传统的文件系统那样以文件和文件夹层次结构组织数据，而是将数据存储在具有高度可扩展性的存储空间（Bucket）中。
 
 
 # Day 15 20240803
@@ -476,6 +539,44 @@ kill-l可以查看kill可跟的信号代码，其中常用的有3个：
     - TERM（正常结束）
 
 ### 查询进程打开的文件：lsof（list open files）
+
+### Linux/Mac 安装软件/管理
+
+- Mac,  brew;  brew install htop
+- Ubuntu, apt; apt update; apt install -y htop
+- Centos, yum; yum -y install htop  
+
+Centos7 issue: mirrorlist.centos.org no longer resolve?
+https://serverfault.com/questions/1161816/mirrorlist-centos-org-no-longer-resolve
+To resolve the issue you can mass update all .repo files:
+
+```sh
+sed -i s/mirror.centos.org/vault.centos.org/g /etc/yum.repos.d/*.repo
+sed -i s/^#.*baseurl=http/baseurl=http/g /etc/yum.repos.d/*.repo
+sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
+```
+
+#### mac install brew
+
+```sh
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+```
+
+### awk 使用**关联数组**做统计
+
+```sh
+iphone,3
+iphone,2
+ipad,4
+ipad,5
+imac,2
+imac,1.1
+
+cat test1 | awk -F ',' '{sum[$1]+=$2}END{ for (i in sum) print i,sum[i]}' 
+iphone 5
+imac 3.1
+ipad 9
+```
 
 # Day 10 20240728
 每天5分钟玩转docker  
