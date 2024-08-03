@@ -7,6 +7,7 @@ golang: https://go.dev/tour/basics/1
 https://github.com/able8/vscode-config/tree/master
 
 
+
 # Linux/Mac 安装软件/管理
 
 - Mac,  brew;  brew install htop
@@ -28,6 +29,89 @@ sed -i s/^mirrorlist=http/#mirrorlist=http/g /etc/yum.repos.d/*.repo
 ```sh
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ```
+
+# awk 使用**关联数组**做统计
+
+```sh
+iphone,3
+iphone,2
+ipad,4
+ipad,5
+imac,2
+imac,1.1
+
+cat test1 | awk -F ',' '{sum[$1]+=$2}END{ for (i in sum) print i,sum[i]}' 
+iphone 5
+imac 3.1
+ipad 9
+```
+
+
+# Day 15 20240803
+## Vim/Vi 编辑器
+### What & Why
+- Vim 编辑器是 Linux 最基本的文本编辑工具，也是程序员的一个效率很高要的文本编辑工具
+- 对DevOps来说，时常需要在远程机器上修改文件，在没有UI界面的情况下，需要使用Vim编辑、修改文件
+- 对于普通人来说，丰富而强大的命令也可以极大提高文本编辑效率（在熟练掌握的情况下）
+
+### 3种模式
+- 一般模式
+    - 用vi打开某个文件，默认进入的模式
+- 编辑模式
+    - 按`i`键可以进入编辑模式，底部会出现“--INSERT--”字样。退出是`Esc`键
+- 命令模式
+    - 一般模式中，按`:`or`/`or`?`就会进入当前视图的最后一行出现响应的符号
+
+### 常用按键及其功能 
+- yy：复制光标所在行
+- nyy：复制连同光标所在行内的n行文字
+- p：粘贴（大写P对上一行操作）
+    - 将复制的文本粘贴在光标的下面一行
+    - 将刚刚用d操作删除的内容，粘贴到当前光标所在行的下一行
+- dd：删除行
+- ndd: n是一个数字，表示包含光标所在行内的n行文字
+- d$：删除到行尾
+- dw/de：将从光标当前位置直到单词末尾删除，但：
+    - dw，不包括第一个字符
+    - de：不包括最后一个字符
+- ce：光标处改动一个单词至该单词的末尾
+- x：向后删除一个字符；X：向前删除一个字符
+- `.`：重复上一次操作，可以重复按
+- u：小写，撤销最后执行的命令；大写，撤销对整行的修改
+- r：按r键再输入一个字符，可用新输入的字符替换光标所在位置的字符
+- Ctrl+r 重做redo
+- i：光标处添加内容；I：在当前光标所在行的第一个非空处添加内容
+- a：当前光标后一个字符添加内容；A：当前光标所在行的最后一个字符处添加内容
+- o：当前光标下一行插入新行并开始编辑；O：当前光标上一行插入新行并开始编辑
+- 2w：光标向后移动两个单词
+- 2dw：删除2个单词
+- 3e：光标移动到后面第三个单词尾
+- 0（数字0）：光标移动到行首
+- v：选定指定字符，实现复制、粘贴等
+- `/`：`/`+要查找的字符串，向后搜索字符串，继续查找按n，反向查找按N
+- `?`：`?`+要查找的字符串，向前搜索字符串，继续查找按n，反向查找按N
+- `:`wq: 保存退出
+- `:`q!：不保存退出 
+
+| 按键 | 动作 |  
+| ----- | ----- |    
+| h | 光标左移 |
+| j | 光标下移|
+|k|上移|
+|l|右移|
+|$|移到本行的末尾|
+|G|移动到尾行|
+|gg|移动到首行|
+|:n 即进入末行指令模式后输入行号按回车|移动到第n行|
+|n n是一个数字，按后回车|往下移动n行|
+|Ctrl+f|往下移动一页|
+|Ctrl+b|往上移动一页|
+|Ctrl+d|往下移动半页|
+|Ctrl+u|往上移动半页|
+
+
+
+
 
 # Day 14 20240801 
 ## Linux 3h （ - File permissions）
@@ -2857,4 +2941,3 @@ https://www.runoob.com/linux/linux-file-attr-permission.html
 https://www.runoob.com/linux/linux-file-content-manage.html
 
 https://www.runoob.com/linux/linux-vim.html 
-
