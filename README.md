@@ -4,7 +4,6 @@ My GitHub：https://github.com/cyy8/notes
 
 golang: https://go.dev/tour/basics/1
 
-
 # Day 16 20240804
 
 ## 阿里云 Aliyun
@@ -110,6 +109,11 @@ test.txt                                                100%    0     0.0KB/s   
 #####  对象存储（Object Storage）
 对象存储适用于存储和管理大量非结构化数据，如图片、视频、音频、文档等。数据以对象的形式存储，并具有自定义的元数据，使数据更易于访问和管理。对象存储不像传统的文件系统那样以文件和文件夹层次结构组织数据，而是将数据存储在具有高度可扩展性的存储空间（Bucket）中。
 
+
+
+
+
+<!--
 ### 什么是函数计算
 
 - 函数计算是Serverless架构的一种形态，面向函数编程，基于事件驱动提供阿里云云服务之间端到端的解决方案。借助函数计算，您可以快速构建任何类型的应用和函数，并且只需为任务实际消耗的资源付费。
@@ -125,6 +129,7 @@ test.txt                                                100%    0     0.0KB/s   
 GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -o main main.go
 zip my-function.zip main
 ```
+-->
 
 
 # Day 15 20240803
