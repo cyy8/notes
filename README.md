@@ -93,37 +93,29 @@ test.txt                                                100%    0     0.0KB/s   
 - 安全组是一种虚拟防火墙，能够控制ECS实例的出入站流量。
 - 安全组的入方向规则控制ECS实例的入站流量，出方向规则控制ECS实例的出站流量。
 
-
-### 阿里云对象存储 OSS（Object Storage Service）
-
-低成本、高可靠的云存储服务。
-
 #### [什么是云存储？](https://www.aliyun.com/getting-started/what-is/what-is-cloud-storage?spm=a2c4g.11186623.0.0.9eae1eb70RClYA)
 - 云存储是一种数据存储在远端服务器集群在线访问的存储类型，用户无需关注存储位置。
 - 云存储服务提供商负责安全地存储、管理和维护存储服务器、基础设施和网络。
 - 基于高度虚拟化的基础架构云存储可以提供广泛的弹性来应对不确定性的容量和性能的诉求。
-- 
 
-#####  对象存储（Object Storage）
-
-对象存储适用于存储和管理大量非结构化数据，如图片、视频、音频、文档等。数据以对象的形式存储，并具有自定义的元数据，使数据更易于访问和管理。对象存储不像传统的文件系统那样以文件和文件夹层次结构组织数据，而是将数据存储在具有高度可扩展性的存储空间（Bucket）中。
+- 阿里云对象存储**OSS（Object Storage Service）**：
+    - 适用于存储和管理大量非结构化数据，如图片、视频、音频、文档等
+    - 数据以对象的形式存储，并具有自定义的元数据，使数据更易于访问和管理
+    - 对象存储不像传统的文件系统那样以文件和文件夹层次结构组织数据，而是将数据存储在具有高度可扩展性的存储空间（Bucket）中
 
 
 ### [专有网络VPC](https://help.aliyun.com/zh/vpc/?spm=a2c4g.750001.0.0.49aa1ec4aIqdgs)
 
-- 专有网络VPC（Virtual Private Cloud）是用户基于阿里云创建的自定义私有网络, 不同的专有网络之间二层逻辑隔离，用户可以在自己创建的专有网络内创建和管理云产品实例，比如ECS、SLB、RDS等。
-
-- 专有网络是您专有的云上私有网络。您可以完全掌控自己的专有网络，例如选择IP地址范围、配置路由表和网关等，您可以在自己定义的专有网络中使用阿里云资源
-https://help.aliyun.com/zh/vpc/product-overview/what-is-a-vpc?spm=a2c4g.11186623.0.0.6adb145bzHZHsH
-
-- 每个专有网络都由至少一个私网网段、一个虚拟路由器和至少一个交换机组成。
-- 专有网络是地域级别的资源，专有网络不可以跨地域，但包含所属地域的所有可用区。您可以在每个可用区内创建一个或多个交换机来划分子网。
-
-
-- 地域 Region， 上海，杭州等
-- 可用区 Available Zone ，可用区 A， B, C 
-
-- 交换机，路由表
+- 专有网络VPC（Virtual Private Cloud）是用户的云上私有网络。用户可以设置自己的专有网络，例如选择IP地址范围、配置路由表和网关等，并在自己定义的专有网络中使用阿里云资源
+    - 每个专有网络都由至少一个私网网段、一个虚拟路由器和至少一个交换机组成。
+    - 专有网络是地域级别的资源，专有网络不可以跨地域，但包含所属地域的所有可用区
+        - 地域 Region， 上海，杭州等
+        - 可用区 Available Zone ，可用区 A， B, C 
+- 交换机：专有网络的每个可用区内，可以通过创建一个或多个交换机来划分子网
+- 路由表：创建VPC后，系统自动生成一张系统路由表
+    - 系统路由表：系统自动创建，用户不可创建和删除
+    - 自定义路由表：用户可以在VPC内创建自定义路由表，通过自定义路。看，     ·由表和交换机绑定，将交换机网段作为目标网段，用于交换机内的云产品通信
+    - 网关路由表：用户可在VPC内创建自定义路由表，将自定义路由表和IPv4网关绑定，控制进入VPC的公网流量的路由
 
 
 <!--
@@ -656,9 +648,11 @@ CONTAINER ID   IMAGE                             COMMAND                   CREAT
 * -d后台运行 sleep infinity 让容器保持运行不退出
 
 ```sh
-➜  notes git:(main) ✗ docker run -d ubuntu:22.04 /bin/bash -c "sleep infinity" #-d后台运行 sleep infinity 让容器保持运行不退出
+docker run -d ubuntu:22.04 /bin/bash -c "sleep infinity" #-d后台运行 sleep infinity 让容器保持运行不退出
+
 80c1031379a6b2226dd4a3c3c6f068be95f66b051fb71a38c13f63e0d68b6865
-➜  notes git:(main) ✗ docker ps
+docker ps
+
 CONTAINER ID   IMAGE                             COMMAND                   CREATED          STATUS          PORTS                  NAMES
 80c1031379a6   ubuntu:22.04                      "/bin/bash -c 'sleep…"   7 seconds ago    Up 6 seconds                           awesome_stonebraker
 c27524f572c8   ubuntu:22.04                      "/bin/bash -c 'sleep…"   45 seconds ago   Up 44 seconds  
