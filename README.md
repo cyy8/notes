@@ -4,6 +4,27 @@ My GitHub：https://github.com/cyy8/notes
 
 golang: https://go.dev/tour/basics/1
 
+
+
+
+# Day 19 20240807
+
+* Linux 《Linux Shell 脚本攻略（第3版）》2.5h
+* 中式英语之鉴 2h
+
+# Day 18 20240806
+
+* 中式英语之鉴 2.5h
+    * Part One - Unnecessary Nouns and Verbs
+
+* Go
+    * 函数或方法多个返回值 没太看懂
+
+# Day 17 20240805
+
+* Linux Working with Files & Text Processing 2.5h
+* Go 1h
+
 # Day 16 20240804
 
 ## 阿里云 Aliyun
@@ -208,38 +229,9 @@ zip my-function.zip main
 ## Network
 
 
-# Day 13 20240731
-## Head First Go语言程序设计
-### Chapter 1 语法基础
-* Go：一种能快速编写代码并生成程序的语言，可以快速编译和运行
-* 输出hello World
-```go
-package main
+# Day 13 20240731 
+## Head First Go语言程序设计 (见golang.md)
 
-import "fmt"
-
-func main() {
-	fmt.Println("Hello, World!")
-}
-```
-* Go结构
-    * package句子：每个go文件都以package子句开头。package（包）是一组代码
-    * imports部分：go文件有一个或多个import语句
-    * 实际代码
-* 调用函数：Println()，Println可以接受一个或多个参数：希望函数处理的值
-* 常见函数：
-    * math.Floor 对浮点数向下取最接近的整数；math.Ceil 对浮点数向上取最近的整数
-    - strings.Title 拿到一个字符串，将其包含的每个单词第一个字母都变成大写，并返回大写的字符串
-- 字符串：双引号之间的文本
-    - 字符串的转义符：反斜杠后表示另一个字符的字符  
-        | 转义序列 | 值     |    
-        | ------- |-------| 
-        |\n       | 换行符|
-        |\t        |制表符 |
-        |\"         |双引号 |
-        |\\         |反斜杠|
-- 符文：单个字符；而字符串是一系列文本字符
-    - 符文用单引号包围，'a'；字符串用双引号包围
 
 
 
