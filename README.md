@@ -1,14 +1,14 @@
 # notes 
 
-My GitHub：https://github.com/cyy8/notes
+* My GitHub：https://github.com/cyy8/notes
+* golang: https://go.dev/tour/basics/1
+* [中文技术文档的写作规范](https://github.com/ruanyf/document-style-guide/tree/master?tab=readme-ov-file)
 
-golang: https://go.dev/tour/basics/1
 
-### 第一次给Kubernetes开源社区做贡献
 
-32岁985英语本硕，失业3个多月，转行IT学习的第20天。
+### 20240808 第一次给 Kubernetes 开源社区做贡献
 
-今天是了解 K8s 的第一天，浏览了官方文档，并提了一个小小的PR。
+今天是学习 IT 技术的第20天，开始了解 K8s 的第一天，浏览了官方文档，并提了一个小小的PR。
 
 这也是我第一次提交 Pull Request 啊，第一次给开源社区做贡献! 
 
@@ -17,9 +17,7 @@ https://github.com/kubernetes/website/pull/47399
 >Welcome @cyy8!  
 >It looks like this is your first PR to kubernetes/website 🎉.  
 >…  
->Thank you, and welcome to Kubernetes. 😃
-
-大家有给开源社区做过贡献吗，这个价值大吗？
+>Thank you, and welcome to Kubernetes. 
 
 # Day 20 - 20240808
 
@@ -61,18 +59,14 @@ https://github.com/kubernetes/website/pull/47399
     * 容器运行时(Container Runtime)，负责启动、运行和停止容器。最初是Docker，后来是Containerd
     * kube-proxy 服务，负责容器之间的通信和负载均衡
 
-* hosted Kubernetes：托管版集群
-    * 云厂商构建集群，并维护控制平面
-    * 用户只需管理工作节点、部署应用
+### 托管版集群 hosted Kubernetes
+* 云厂商构建集群，并维护控制平面
+* 用户只需管理工作节点、部署应用
 
+### [kubectl 管理 k8s 集群的命令行工具](https://kubernetes.io/docs/reference/kubectl/docker-cli-to-kubectl/)
 
-## `kubectl` for Docker Users
-
-- `kubectl`:用于管理k8s的命令行工具，读作“Kube see tee ell” 
-- Use the Kubernetes command line tool `kubectl` to interact with the API Server. 
-- Using kubectl is straightforward if you are familiar with the Docker command line tool.
-
-https://kubernetes.io/docs/reference/kubectl/docker-cli-to-kubectl/
+- `kubectl` 读作 "Kube see tee ell"
+- kubectl 获取 node 和 pod
 
 ```sh
 ➜  ~ kubectl get node      # 列出集群所有节点
@@ -83,41 +77,35 @@ No resources found in default namespace.
 ➜  ~ kubectl get pod -A    # -A表示all namespace
 NAMESPACE     NAME                                     READY   STATUS    RESTARTS   AGE
 kube-system   coredns-76f75df574-chc2r                 1/1     Running   0          19h
-kube-system   coredns-76f75df574-kxc4m                 1/1     Running   0          19h
 kube-system   etcd-docker-desktop                      1/1     Running   0          19h
 kube-system   kube-apiserver-docker-desktop            1/1     Running   0          19h
 kube-system   kube-controller-manager-docker-desktop   1/1     Running   0          19h
 kube-system   kube-proxy-qh6vl                         1/1     Running   0          19h
 kube-system   kube-scheduler-docker-desktop            1/1     Running   0          19h
 kube-system   storage-provisioner                      1/1     Running   0          19h
-kube-system   vpnkit-controller                        1/1     Running   0          19h
-
 ```
 
 - kubectl创建deployment，启动Pod
+
 ```sh
 ➜  ~ kubectl create deployment --image=nginx nginx-app
 deployment.apps/nginx-app created
+
 ➜  ~ k get deploy      #deployment 部署集，指定需要运行的Pod及数量
 NAME        READY   UP-TO-DATE   AVAILABLE   AGE
 nginx-app   1/1     1            1           15s
+
 ➜  ~ kubectl get pod
 NAME                        READY   STATUS              RESTARTS   AGE
-nginx-app-5777b5f95-lwqx4   0/1     ContainerCreating   0          12s
-➜  ~ kubectl get pod
-NAME                        READY   STATUS         RESTARTS   AGE
-nginx-app-5777b5f95-lwqx4   0/1     ErrImagePull   0          81s
-➜  ~ kubectl get pod
-NAME                        READY   STATUS             RESTARTS   AGE
-nginx-app-5777b5f95-lwqx4   0/1     ImagePullBackOff   0          102s
-➜  ~ kubectl delete pod nginx-app-5777b5f95-lwqx4
-pod "nginx-app-5777b5f95-lwqx4" deleted
+nginx-app-5777b5f95-5fk2m   0/1     ContainerCreating   0          12s
+
 ➜  ~ kubectl get pod
 NAME                        READY   STATUS    RESTARTS   AGE
 nginx-app-5777b5f95-5fk2m   1/1     Running   0          9s
 ```
 
-- 容器中执行命令
+- kubectl exec 容器中执行命令
+
 ```sh
 ➜  ~ kubectl exec nginx-app-5777b5f95-5fk2m -- echo hi     #不打开终端，直接执行命令
 hi
@@ -131,32 +119,37 @@ boot  docker-entrypoint.d  etc			 lib   mnt    proc  run   srv	tmp  var
 #
 ```
 
-- 查看容器的日志
+- kubectl log 查看容器的日志
 ```sh
 ➜  ~ k logs nginx-app-5777b5f95-   #查看容器的日志
 /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
 2024/08/08 07:27:20 [notice] 1#1: start worker process 35
+
 ➜  ~ k logs -f nginx-app-5777b5f95-5fk2m   # -f表follow，查看实时日志
 /docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
 2024/08/08 07:27:20 [notice] 1#1: start worker process 35
 ^C
+
 ➜  ~ k logs --previous nginx-app-5777b5f95-5fk2m   # 查看重启前容器的日志
 Error from server (BadRequest): previous terminated container "nginx" in pod "nginx-app-5777b5f95-5fk2m" not found
 ```
 
-- 删除Pod
+- kubectl delete pod 删除 Pod
 ```sh
 ➜  ~ k delete pod nginx-app-5777b5f95-5fk2m    # kubectl delete pod NAME 删除Pod
 pod "nginx-app-5777b5f95-5fk2m" deleted
+
 ➜  ~ k get pod
 NAME                        READY   STATUS              RESTARTS   AGE
 nginx-app-5777b5f95-98t8z   0/1     ContainerCreating   0          7s
+
 ➜  ~ k get pod     # 一个被删除后，自动创建新的Pod
 NAME                        READY   STATUS    RESTARTS   AGE
 nginx-app-5777b5f95-98t8z   1/1     Running   0          34s
 ```
 
-- 彻底删除Pod- 删除部署集deployment
+- 删除部署集deployment, 彻底删除Pod
+
 ```sh
 ➜  ~ k get deploy
 NAME        READY   UP-TO-DATE   AVAILABLE   AGE
@@ -167,7 +160,7 @@ deployment.apps "nginx-app" deleted
 No resources found in default namespace.
 ```
 
-- -v显示详细请求过程；数字表示详细程度，数字越大越详细
+- -v 显示详细请求过程；数字表示详细程度，数字越大越详细
 ```sh
 ➜  ~ k get Pod -v 7
 I0808 16:08:29.837025    2293 loader.go:395] Config loaded from file:  /Users/cyy/.kube/config
