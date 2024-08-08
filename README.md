@@ -4,6 +4,22 @@ My GitHub：https://github.com/cyy8/notes
 
 golang: https://go.dev/tour/basics/1
 
+### 第一次给Kubernetes开源社区做贡献
+
+32岁985英语本硕，失业3个多月，转行IT学习的第20天。
+
+今天是了解 K8s 的第一天，浏览了官方文档，并提了一个小小的PR。
+
+这也是我第一次提交 Pull Request 啊，第一次给开源社区做贡献! 
+
+https://github.com/kubernetes/website/pull/47399
+
+>Welcome @cyy8!  
+>It looks like this is your first PR to kubernetes/website 🎉.  
+>…  
+>Thank you, and welcome to Kubernetes. 😃
+
+大家有给开源社区做过贡献吗，这个价值大吗？
 
 # Day 20 - 20240808
 
@@ -15,7 +31,7 @@ golang: https://go.dev/tour/basics/1
 * 名字由来
     - Kubernetes 来自希腊语，意为"舵手"
     - 简称"K8s", 发音为"kates"，8表示K和s之间的8个字符
-* 是什么
+* 是什么（容器管理平台）
     - K8s是云原生微服务（cloud-native microservice）应用的编排器。运行和管理容器化的应用，实现扩缩容、自我修复、不停机部署等。
 - 何为微服务
     - 单体应用：所有功能紧密耦合，整体部署、升级和扩缩容，笨重，风险大，开发周期长
@@ -34,7 +50,7 @@ golang: https://go.dev/tour/basics/1
     * 多台机器组成一个 Kubernetes 集群
     * 集群中的机器称为节点 Node
 
-* 主节点，Master Node: 运行系统服务，是集群的"大脑"
+* 主节点，Control Plane Node(Master Node): 运行系统服务，是集群的"大脑"
     * API 服务器 (API server)，集群中心，负责组件之间的通信
     * 调度器 (Scheduler)，负责将服务调度到合适的节点上
     * 控制器 (Controller Manager)，负责管理服务状态
@@ -42,21 +58,127 @@ golang: https://go.dev/tour/basics/1
 
 * 工作节点，Worker Node: 运行用户服务
     * kubelet 是 Node 的 agent，将工作节点加入集群，并与Master通信，接收任务和报告任务状态
-    * 容器运行时，负责启动和停止容器。最初是Docker，后来是Containerd
+    * 容器运行时(Container Runtime)，负责启动、运行和停止容器。最初是Docker，后来是Containerd
     * kube-proxy 服务，负责容器之间的通信和负载均衡
 
-
-
-
+* hosted Kubernetes：托管版集群
+    * 云厂商构建集群，并维护控制平面
+    * 用户只需管理工作节点、部署应用
 
 
 ## `kubectl` for Docker Users
 
+- `kubectl`:用于管理k8s的命令行工具，读作“Kube see tee ell” 
 - Use the Kubernetes command line tool `kubectl` to interact with the API Server. 
 - Using kubectl is straightforward if you are familiar with the Docker command line tool.
 
 https://kubernetes.io/docs/reference/kubectl/docker-cli-to-kubectl/
 
+```sh
+➜  ~ kubectl get node      # 列出集群所有节点
+NAME             STATUS   ROLES           AGE   VERSION
+docker-desktop   Ready    control-plane   19h   v1.29.2
+➜  ~ kubectl get pod       # 列出当前namespace的所有Pod
+No resources found in default namespace.
+➜  ~ kubectl get pod -A    # -A表示all namespace
+NAMESPACE     NAME                                     READY   STATUS    RESTARTS   AGE
+kube-system   coredns-76f75df574-chc2r                 1/1     Running   0          19h
+kube-system   coredns-76f75df574-kxc4m                 1/1     Running   0          19h
+kube-system   etcd-docker-desktop                      1/1     Running   0          19h
+kube-system   kube-apiserver-docker-desktop            1/1     Running   0          19h
+kube-system   kube-controller-manager-docker-desktop   1/1     Running   0          19h
+kube-system   kube-proxy-qh6vl                         1/1     Running   0          19h
+kube-system   kube-scheduler-docker-desktop            1/1     Running   0          19h
+kube-system   storage-provisioner                      1/1     Running   0          19h
+kube-system   vpnkit-controller                        1/1     Running   0          19h
+
+```
+
+- kubectl创建deployment，启动Pod
+```sh
+➜  ~ kubectl create deployment --image=nginx nginx-app
+deployment.apps/nginx-app created
+➜  ~ k get deploy      #deployment 部署集，指定需要运行的Pod及数量
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-app   1/1     1            1           15s
+➜  ~ kubectl get pod
+NAME                        READY   STATUS              RESTARTS   AGE
+nginx-app-5777b5f95-lwqx4   0/1     ContainerCreating   0          12s
+➜  ~ kubectl get pod
+NAME                        READY   STATUS         RESTARTS   AGE
+nginx-app-5777b5f95-lwqx4   0/1     ErrImagePull   0          81s
+➜  ~ kubectl get pod
+NAME                        READY   STATUS             RESTARTS   AGE
+nginx-app-5777b5f95-lwqx4   0/1     ImagePullBackOff   0          102s
+➜  ~ kubectl delete pod nginx-app-5777b5f95-lwqx4
+pod "nginx-app-5777b5f95-lwqx4" deleted
+➜  ~ kubectl get pod
+NAME                        READY   STATUS    RESTARTS   AGE
+nginx-app-5777b5f95-5fk2m   1/1     Running   0          9s
+```
+
+- 容器中执行命令
+```sh
+➜  ~ kubectl exec nginx-app-5777b5f95-5fk2m -- echo hi     #不打开终端，直接执行命令
+hi
+
+➜  ~ kubectl exec -it nginx-app-5777b5f95-5fk2m -- /bin/sh # -it 打开交互终端，使用bin/sh
+# uname
+Linux
+# ls
+bin   dev		   docker-entrypoint.sh  home  media  opt   root  sbin	sys  usr
+boot  docker-entrypoint.d  etc			 lib   mnt    proc  run   srv	tmp  var
+#
+```
+
+- 查看容器的日志
+```sh
+➜  ~ k logs nginx-app-5777b5f95-   #查看容器的日志
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2024/08/08 07:27:20 [notice] 1#1: start worker process 35
+➜  ~ k logs -f nginx-app-5777b5f95-5fk2m   # -f表follow，查看实时日志
+/docker-entrypoint.sh: /docker-entrypoint.d/ is not empty, will attempt to perform configuration
+2024/08/08 07:27:20 [notice] 1#1: start worker process 35
+^C
+➜  ~ k logs --previous nginx-app-5777b5f95-5fk2m   # 查看重启前容器的日志
+Error from server (BadRequest): previous terminated container "nginx" in pod "nginx-app-5777b5f95-5fk2m" not found
+```
+
+- 删除Pod
+```sh
+➜  ~ k delete pod nginx-app-5777b5f95-5fk2m    # kubectl delete pod NAME 删除Pod
+pod "nginx-app-5777b5f95-5fk2m" deleted
+➜  ~ k get pod
+NAME                        READY   STATUS              RESTARTS   AGE
+nginx-app-5777b5f95-98t8z   0/1     ContainerCreating   0          7s
+➜  ~ k get pod     # 一个被删除后，自动创建新的Pod
+NAME                        READY   STATUS    RESTARTS   AGE
+nginx-app-5777b5f95-98t8z   1/1     Running   0          34s
+```
+
+- 彻底删除Pod- 删除部署集deployment
+```sh
+➜  ~ k get deploy
+NAME        READY   UP-TO-DATE   AVAILABLE   AGE
+nginx-app   1/1     1            1           30m
+➜  ~ k delete deploy nginx-app
+deployment.apps "nginx-app" deleted
+➜  ~ k get pod
+No resources found in default namespace.
+```
+
+- -v显示详细请求过程；数字表示详细程度，数字越大越详细
+```sh
+➜  ~ k get Pod -v 7
+I0808 16:08:29.837025    2293 loader.go:395] Config loaded from file:  /Users/cyy/.kube/config
+I0808 16:08:29.845647    2293 round_trippers.go:463] GET https://kubernetes.docker.internal:6443/api/v1/namespaces/default/pods?limit=500
+I0808 16:08:29.845656    2293 round_trippers.go:469] Request Headers:
+I0808 16:08:29.845660    2293 round_trippers.go:473]     Accept: application/json;as=Table;v=v1;g=meta.k8s.io,application/json;as=Table;v=v1beta1;g=meta.k8s.io,application/json
+I0808 16:08:29.845664    2293 round_trippers.go:473]     User-Agent: kubectl/v1.29.2 (darwin/arm64) kubernetes/4b8e819
+I0808 16:08:29.863821    2293 round_trippers.go:574] Response Status: 200 OK in 18 milliseconds
+NAME                        READY   STATUS    RESTARTS   AGE
+nginx-app-5777b5f95-n945v   1/1     Running   0          10m
+```
 
 # Day 19 20240807
 
