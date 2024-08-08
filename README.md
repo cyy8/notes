@@ -5,6 +5,57 @@ My GitHub：https://github.com/cyy8/notes
 golang: https://go.dev/tour/basics/1
 
 
+# Day 20 - 20240808
+
+## [Kubernetes (K8s)](https://kubernetes.io/docs/concepts/architecture/)
+
+《Kubernetes 快速入门（第2版）》 
+
+### Kubernetes 简介
+* 名字由来
+    - Kubernetes 来自希腊语，意为"舵手"
+    - 简称"K8s", 发音为"kates"，8表示K和s之间的8个字符
+* 是什么
+    - K8s是云原生微服务（cloud-native microservice）应用的编排器。运行和管理容器化的应用，实现扩缩容、自我修复、不停机部署等。
+- 何为微服务
+    - 单体应用：所有功能紧密耦合，整体部署、升级和扩缩容，笨重，风险大，开发周期长
+    - 微服务：与"单体应用"相对，拆分为小的服务，松散耦合，每个服务独立开发和部署，高效
+- 何为云原生
+    - 按需扩缩容: 根据需求量，自动添加或减少资源
+    - 支持滚动更新: 指不中断服务，逐个更新
+    - 自我修复: 某个实例故障时，启动副本替代
+    - 在任何k8s上运行: 通用灵活，不受平台限制
+- 何为编排器
+    - 管理和组织微服务应用，提供自动扩缩容、自我修复，更新等功能
+
+### Kubernetes 集群的组成
+
+* 集群(cluster)
+    * 多台机器组成一个 Kubernetes 集群
+    * 集群中的机器称为节点 Node
+
+* 主节点，Master Node: 运行系统服务，是集群的"大脑"
+    * API 服务器 (API server)，集群中心，负责组件之间的通信
+    * 调度器 (Scheduler)，负责将服务调度到合适的节点上
+    * 控制器 (Controller Manager)，负责管理服务状态
+    * 集群存储 (etcd)，存储集群配置数据
+
+* 工作节点，Worker Node: 运行用户服务
+    * kubelet 是 Node 的 agent，将工作节点加入集群，并与Master通信，接收任务和报告任务状态
+    * 容器运行时，负责启动和停止容器。最初是Docker，后来是Containerd
+    * kube-proxy 服务，负责容器之间的通信和负载均衡
+
+
+
+
+
+
+## `kubectl` for Docker Users
+
+- Use the Kubernetes command line tool `kubectl` to interact with the API Server. 
+- Using kubectl is straightforward if you are familiar with the Docker command line tool.
+
+https://kubernetes.io/docs/reference/kubectl/docker-cli-to-kubectl/
 
 
 # Day 19 20240807
