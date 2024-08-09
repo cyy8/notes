@@ -4,11 +4,37 @@
 * golang: https://go.dev/tour/basics/1
 * [中文技术文档的写作规范](https://github.com/ruanyf/document-style-guide/tree/master?tab=readme-ov-file)
 
+* [Hyphen vs. Dash – – — What’s the Difference?](https://www.grammarly.com/blog/hyphens-and-dashes/)
+
+* [Kubernetes Contributor Cheat Sheet](https://github.com/kubernetes/community/tree/master/contributors/guide/contributor-cheatsheet)
+
+* [Your First Contribution](https://github.com/kubernetes/community/blob/master/contributors/guide/first-contribution.md)
 
 
-### 20240808 第一次给 Kubernetes 开源社区做贡献
+# Day 21 - 20240809
 
-今天是学习 IT 技术的第20天，开始了解 K8s 的第一天，浏览了官方文档，并提了一个小小的PR。
+## k8s文档学习 2h
+
+### [Overview](https://kubernetes.io/docs/concepts/overview/)
+
+- K8s: portable, extensible, open source platform for managing containerized workloads and service
+- About "编排器" 
+
+>Additionally, Kubernetes is not a mere orchestration system. In fact, it **eliminates** the need for orchestration. The technical definition of orchestration is execution of a defined workflow: first do A, then B, then C. In contrast, Kubernetes comprises a set of independent, composable control processes that continuously **drive the current state towards the provided desired state**. It shouldn't matter how you get from A to C. Centralized control is also not required. This results in a system that is easier to use and **more powerful, robust, resilient, and extensible**.
+
+
+https://kubernetes.io/docs/concepts/overview/working-with-objects/#kubernetes-objects
+
+https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/
+
+https://kubernetes.io/docs/concepts/workloads/controllers/deployment/
+
+https://deploy-preview-47399--kubernetes-io-main-staging.netlify.app/docs/reference/kubectl/quick-reference/
+
+
+# 第一次给 Kubernetes 开源社区做贡献
+
+ 20240808 学习 IT 技术的第20天，开始了解 K8s 的第一天，浏览了官方文档，并提了一个小小的PR。
 
 这也是我第一次提交 Pull Request 啊，第一次给开源社区做贡献! 
 
@@ -18,6 +44,8 @@ https://github.com/kubernetes/website/pull/47399
 >It looks like this is your first PR to kubernetes/website 🎉.  
 >…  
 >Thank you, and welcome to Kubernetes. 
+
+
 
 # Day 20 - 20240808
 
