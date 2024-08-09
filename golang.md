@@ -117,16 +117,16 @@ func main() {
     import "fmt"
 
     func main() {
-	var price int = 100
-	fmt.Println("Price is", price, "dollars") //不涉及运算，price不需要转换
-	var taxRate float64 = 0.08
-	var tax float64 = float64(price) * taxRate //price（int）涉及与taxRate（float64）的运算，需转换
-	fmt.Println("Tax is", tax, "dollars.")
-	var total float64 = float64(price) + tax  //同上
-	fmt.Println("Total coast is", total, "dollars.")
-	var availableFunds int = 120
-	fmt.Println("Within budget?", int(total) <= availableFunds) //total（float64）与availableFunds（int）比较，需转换
-}
+        var price int = 100
+        fmt.Println("Price is", price, "dollars") //不涉及运算，price不需要转换
+        var taxRate float64 = 0.08
+        var tax float64 = float64(price) * taxRate //price（int）涉及与taxRate（float64）的运算，需转换
+        fmt.Println("Tax is", tax, "dollars.")
+        var total float64 = float64(price) + tax  //同上
+        fmt.Println("Total coast is", total, "dollars.")
+        var availableFunds int = 120
+        fmt.Println("Within budget?", int(total) <= availableFunds) //total（float64）与availableFunds（int）比较，需转换
+    }
     ```
     
 - Go 工具
