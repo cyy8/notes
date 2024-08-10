@@ -3,17 +3,175 @@
 * My GitHub：https://github.com/cyy8/notes
 * golang: https://go.dev/tour/basics/1
 * [中文技术文档的写作规范](https://github.com/ruanyf/document-style-guide/tree/master?tab=readme-ov-file)
-
 * [Hyphen vs. Dash – – — What’s the Difference?](https://www.grammarly.com/blog/hyphens-and-dashes/)
-
 * [Kubernetes Contributor Cheat Sheet](https://github.com/kubernetes/community/tree/master/contributors/guide/contributor-cheatsheet)
-
 * [Your First Contribution](https://github.com/kubernetes/community/blob/master/contributors/guide/first-contribution.md)
+
+# Day 22 - 20240810
+
+《每天5分钟玩转Kubernetes》 4h 
+
+## 《每天5分钟玩转Kubernetes》
+
+### 运行应用 Deployment
+
+* 运行 Deployment 总过程
+
+    1. 用户通过 kubectl 创建 Deployment (deployment.apps/nginx-deployment created）
+    2. Deployment 创建 ReplicaSet (deployment-controller, Scaled up replica set nginx-deployment-54c4fc9b4b to 2)
+    3. ReplicaSet 创建 Pod (replicaset-controller, Created pod: nginx-deployment-54c4fc9b4b-b5bwl)
+
+* Create deployment
+
+```sh
+k create deployment nginx-deployment --image=nginx:latest --replicas=2    # 与书上不一致，`k run` is deprecated，and `deployment` should be added
+```
+* kubectl describe deployment: show details
+```sh
+k describe deployment nginx-deployment
+Name:                   nginx-deployment
+Namespace:              default
+CreationTimestamp:      Sat, 10 Aug 2024 11:08:31 +0800
+Labels:                 app=nginx-deployment
+Annotations:            deployment.kubernetes.io/revision: 1
+Selector:               app=nginx-deployment
+Replicas:               2 desired | 2 updated | 2 total | 2 available | 0 unavailable
+StrategyType:           RollingUpdate
+MinReadySeconds:        0
+RollingUpdateStrategy:  25% max unavailable, 25% max surge
+Pod Template:
+  Labels:  app=nginx-deployment
+  Containers:
+   nginx:
+    Image:        nginx:latest
+    Port:         <none>
+    Host Port:    <none>
+    Environment:  <none>
+    Mounts:       <none>
+  Volumes:        <none>
+Conditions:
+  Type           Status  Reason
+  ----           ------  ------
+  Available      True    MinimumReplicasAvailable
+  Progressing    True    NewReplicaSetAvailable
+OldReplicaSets:  <none>
+NewReplicaSet:   nginx-deployment-54c4fc9b4b (2/2 replicas created)
+Events:         # Deployment的日志，记录了Replicaset的启动过程
+  Type    Reason             Age   From                   Message
+  ----    ------             ----  ----                   -------
+  Normal  ScalingReplicaSet  16m   deployment-controller  Scaled up replica set nginx-deployment-54c4fc9b4b to 2
+```
+
+- ReplicaSet
+```sh
+ k describe replicaset nginx-deployment-54c4fc9b4b 
+Name:           nginx-deployment-54c4fc9b4b
+Namespace:      default
+Selector:       app=nginx-deployment,pod-template-hash=54c4fc9b4b
+Labels:         app=nginx-deployment
+...
+Controlled By:  Deployment/nginx-deployment  # 说明此ReplicaSet是由nginx- deployment创建
+Replicas:       2 current / 2 desired
+Pods Status:    2 Running / 0 Waiting / 0 Succeeded / 0 Failed
+Pod Template:
+  Labels:  app=nginx-deployment
+           pod-template-hash=54c4fc9b4b
+  ...
+Events:
+  Type    Reason            Age   From                   Message
+  ----    ------            ----  ----                   -------
+  Normal  SuccessfulCreate  25m   replicaset-controller  Created pod: nginx-deployment-54c4fc9b4b-gr2z5
+  Normal  SuccessfulCreate  25m   replicaset-controller  Created pod: nginx-deployment-54c4fc9b4b-b5bwl
+```
+
+### 命令(Imperative)vs配置文件(Declarative)
+
+k8s支持两种创建资源的方式：命令、配置文件
+- 用 kubectl 命令直接创建
+- 配置文件`yaml`和`kubectl apply`命令
+    `kubectl apply -f nginx.yml`
+
+### Deployment YAML file
+
+```sh
+notes git:(main) ✗ k get deployment nginx-deployment -oyaml|head -n40
+apiVersion: apps/v1     # 当前配置的版本
+kind: Deployment        # 要创建的资源类型，如Service、Job等
+metadata:               # metadata是该资源的元数据
+  name: nginx-deployment     # name是元数据的必须选项
+  namespace: default
+  annotations:         
+    deployment.kubernetes.io/revision: "1"
+  creationTimestamp: "2024-08-10T03:08:31Z"
+  generation: 1
+  labels:
+    app: nginx-deployment
+  resourceVersion: "154655"
+  uid: 5e0df2e7-a540-4058-beca-598d2804d99e
+spec:                   # Specification 该 Deployment 的 规格说明
+  progressDeadlineSeconds: 600
+  replicas: 2           # 副本数量，默认为1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: nginx-deployment
+  strategy:
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  template:     # 定义Pod 的模版，配置文件中的重要部分
+    metadata:   # 定义Pod的元数据，至少需要定义一个label
+      creationTimestamp: null
+      labels:       # 至少定义一个
+        app: nginx-deployment   # label的key和value可以任意指定
+    spec:       # 描述Pod的规格，此部分定义Pod中每一个容器的属性，name 和 image 是必须的
+      containers:
+      - image: nginx:latest     # image是必须的
+        imagePullPolicy: Always
+        name: nginx             # name也是必须的
+        resources: {}
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+```
+
+- Update resource
+ - 修改 YAML 文件，执行 kubectl apply -f 命令
+
+### DaemonSet
+
+- 每个Node最多只能运行一个Pod
+- 应用场景
+    - 在每个节点上运行 **日志收集** agent
+    - 在每个节点上运行 **监控** agent
+
+### Workload Management
+
+Usually you don't need to create Pods directly. Instead, create them using workload resources such as Deployment or Job.
+
+You use the Kubernetes API to create a workload object that represents a higher abstraction level than a Pod, and then the Kubernetes control plane automatically manages Pod objects on your behalf, based on the specification for the workload object you defined.
+
+The built-in APIs for managing workloads are:
+
+* A Deployment manages **a set of Pods** to run an application workload, usually one that **doesn't maintain state**.
+* A DaemonSet ensures that **all (or some) Nodes** run **a copy of a Pod**.
+* A Job and / or a CronJob to define tasks that run to completion and then stop. A Job represents a **one-off task**, whereas each CronJob repeats according to a **schedule**.
+* A StatefulSet is able to make a link between its Pods and their **persistent storage**. For example, you can run a StatefulSet that associates each Pod with a PersistentVolume.
+
+
+### 通过Service 访问 pod
+
+
+### 滚动更新Rolling update 
+
 
 
 # Day 21 - 20240809
 
-## k8s文档学习 2h
+* 《中式英语之鉴 》3h
+* k8s文档学习 2h
+
+## k8s文档学习
 
 ### [Overview](https://kubernetes.io/docs/concepts/overview/)
 
@@ -202,11 +360,11 @@ nginx-app-5777b5f95-n945v   1/1     Running   0          10m
 # Day 19 20240807
 
 * Linux 《Linux Shell 脚本攻略（第3版）》2.5h
-* 中式英语之鉴 2h
+* 《《中式英语之鉴 》2h
 
 # Day 18 20240806
 
-* 中式英语之鉴 2.5h
+* 《中式英语之鉴 》2.5h
     * Part One - Unnecessary Nouns and Verbs
 
 * Go
