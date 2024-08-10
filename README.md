@@ -94,7 +94,10 @@ k8s支持两种创建资源的方式：命令、配置文件
 ### Deployment YAML file
 
 ```sh
-notes git:(main) ✗ k get deployment nginx-deployment -oyaml|head -n40
+k get deployment nginx-deployment -oyaml|head -n40
+```
+
+```yaml
 apiVersion: apps/v1     # 当前配置的版本
 kind: Deployment        # 要创建的资源类型，如Service、Job等
 metadata:               # metadata是该资源的元数据
@@ -3400,7 +3403,7 @@ code .
 # Day 1 20240714 
 Learn Linux 
 
-* git status; git add .; git commit -m "$( date "+%Y-%m-%d %T")"; git push
+* git status; git add .; git commit -m "$(date "+%Y-%m-%d %T")"; git push
 
 * command+j open terminal
 
