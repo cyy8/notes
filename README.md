@@ -9,7 +9,22 @@
 
 # Day 22 - 20240810
 
+[Workload Management in K8s](https://kubernetes.io/docs/concepts/workloads/controllers/) 1h
+
 《每天5分钟玩转Kubernetes》 4h 
+
+## Workload Management
+
+Usually you don't need to create Pods directly. Instead, create them using workload resources such as Deployment or Job.
+
+You use the Kubernetes API to create a workload object that represents a higher abstraction level than a Pod, and then the Kubernetes control plane automatically manages Pod objects on your behalf, based on the specification for the workload object you defined.
+
+The built-in APIs for managing workloads are:
+
+* A Deployment manages **a set of Pods** to run an application workload, usually one that **doesn't maintain state**.
+* A DaemonSet ensures that **all (or some) Nodes** run **a copy of a Pod**.
+* A Job and / or a CronJob to define tasks that run to completion and then stop. A Job represents a **one-off task**, whereas each CronJob repeats according to a **schedule**.
+* A StatefulSet is able to make a link between its Pods and their **persistent storage**. For example, you can run a StatefulSet that associates each Pod with a PersistentVolume.
 
 ## 《每天5分钟玩转Kubernetes》
 
@@ -147,19 +162,6 @@ spec:                   # Specification 该 Deployment 的 规格说明
 - 应用场景
     - 在每个节点上运行 **日志收集** agent
     - 在每个节点上运行 **监控** agent
-
-### Workload Management
-
-Usually you don't need to create Pods directly. Instead, create them using workload resources such as Deployment or Job.
-
-You use the Kubernetes API to create a workload object that represents a higher abstraction level than a Pod, and then the Kubernetes control plane automatically manages Pod objects on your behalf, based on the specification for the workload object you defined.
-
-The built-in APIs for managing workloads are:
-
-* A Deployment manages **a set of Pods** to run an application workload, usually one that **doesn't maintain state**.
-* A DaemonSet ensures that **all (or some) Nodes** run **a copy of a Pod**.
-* A Job and / or a CronJob to define tasks that run to completion and then stop. A Job represents a **one-off task**, whereas each CronJob repeats according to a **schedule**.
-* A StatefulSet is able to make a link between its Pods and their **persistent storage**. For example, you can run a StatefulSet that associates each Pod with a PersistentVolume.
 
 
 ### 通过Service 访问 pod
