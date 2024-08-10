@@ -9,9 +9,8 @@
 
 # Day 22 - 20240810
 
-[Workload Management in K8s](https://kubernetes.io/docs/concepts/workloads/controllers/) 1h
-
-《每天5分钟玩转Kubernetes》 4h 
+* 《每天5分钟玩转Kubernetes》 3h 
+* [Workload Management in K8s](https://kubernetes.io/docs/concepts/workloads/controllers/) 1h
 
 ## Workload Management
 
@@ -21,16 +20,16 @@ You use the Kubernetes API to create a workload object that represents a higher 
 
 The built-in APIs for managing workloads are:
 
-* A Deployment manages **a set of Pods** to run an application workload, usually one that **doesn't maintain state**.
-* A DaemonSet ensures that **all (or some) Nodes** run **a copy of a Pod**.
-* A Job and / or a CronJob to define tasks that run to completion and then stop. A Job represents a **one-off task**, whereas each CronJob repeats according to a **schedule**.
-* A StatefulSet is able to make a link between its Pods and their **persistent storage**. For example, you can run a StatefulSet that associates each Pod with a PersistentVolume.
+* A **Deployment** manages **a set of Pods** to run an application workload, usually one that **doesn't maintain state**.
+* A **DaemonSet** ensures that **all (or some) Nodes** run **a copy of a Pod**.
+* A **Job** or **CronJob** to define tasks that run to completion and then stop. A Job represents a **one-off task**, whereas each CronJob repeats according to a **schedule**.
+* A **StatefulSet** manages its Pods and their **persistent storage**. For example, you can run a StatefulSet that associates each Pod with a PersistentVolume.
 
 ## 《每天5分钟玩转Kubernetes》
 
 ### 运行应用 Deployment
 
-* 运行 Deployment 总过程
+* 运行 Deployment 的总过程
 
     1. 用户通过 kubectl 创建 Deployment (deployment.apps/nginx-deployment created）
     2. Deployment 创建 ReplicaSet (deployment-controller, Scaled up replica set nginx-deployment-54c4fc9b4b to 2)
@@ -103,7 +102,7 @@ Events:
 
 k8s支持两种创建资源的方式：命令、配置文件
 - 用 kubectl 命令直接创建
-- 配置文件`yaml`和`kubectl apply`命令
+- 配置文件 `yaml` 和 `kubectl apply` 命令
     `kubectl apply -f nginx.yml`
 
 ### Deployment YAML file
@@ -163,9 +162,24 @@ spec:                   # Specification 该 Deployment 的 规格说明
     - 在每个节点上运行 **日志收集** agent
     - 在每个节点上运行 **监控** agent
 
+### 通过 Service 访问 Pod
 
-### 通过Service 访问 pod
+- Why need Service
+    - 每个Pod都有自己的IP地址，Controller会用新Pod替代发生故障的Pod，新Pod的IP地址会变
+    - Service提供固定IP，帮助客户端访问Pod
+- What is Service
+    - K8s Service 逻辑上代表了一组Pod，通过 label selector 选择对应的Pod
+    - Service 有自己固定不变的IP
+    - 客户端只需访问 Service 的 IP，K8s 负责建立和维护 Service 和 Pod 的映射
+- Cluster IP 是一个虚拟 IP，由 K8s 节点上的 iptables 规则管理
+- Cluster 中的 Pod 可以通过`<SERVICE_NAME>.<NAMESPACE_NAME>`访问Service，eg：httpd-svc.default
+- Service 的 4 种类型
+    - ClusterIP
+    - NodePort
+    - LoadBalancer
+    - ExternalName
 
+> `ctrl R 关键词`，搜索以前的命令   
 
 ### 滚动更新Rolling update 
 
