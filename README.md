@@ -11,6 +11,7 @@
 # Day 23 - 20240811
 
 * 《每天5分钟玩转Kubernetes》 2.5h 
+* [Open Source Technical Documentation Essentials (LFC111)](https://trainingportal.linuxfoundation.org/courses/open-source-technical-documentation-essentials-lfc111) 1h
 
 ## Kubernetes 健康检查 (Health Check) 功能
 
