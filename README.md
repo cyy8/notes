@@ -10,7 +10,7 @@
 
 # Day 23 - 20240811
 
-* 《每天5分钟玩转Kubernetes》 3h 
+* 《每天5分钟玩转Kubernetes》 2.5h 
 
 ## Kubernetes 健康检查 (Health Check) 功能
 
@@ -26,8 +26,40 @@
 
     Indicates whether the container is ready to respond to requests. 
 
-## 
+## Secret & ConfigMap
 
+向 Pod 传递配置信息时，如果是敏感信息，可使用Secret；一般配置信息，则使用ConfigMap。  
+容器可以通过文件或环境变量的方式使用这些数据。
+
+- Secret
+    - 以密文的方式存储数据
+    - 以 Volume 的形式被 mount 到 pod
+    - 可以通过命令行或 YAML 创建
+
+- Configmap：以明文方式存放非敏感数据
+
+## Kubernetes 存储 - 卷 Volume
+
+- why need Volume
+    - 容器和Pod生命周期短，会被频繁销毁和创建，销毁时容器内部数据会被清除
+    - Volume 可以持久化保存容器的数据
+- Volume
+    - 生命周期独立于容器，Pod中的容器可能会被销毁和重建，但Volume会被保留
+    - 本质一个目录
+- emptyDir Volume
+    - 最基础的 Volume 类型，是 Host 上创建的临时目录（不具备持久性）
+- hostPath Volum
+    - Host 系统中存在的目录，mount给Pod的容器
+    - Pod被销毁，hostPath 对应的目录还是会保留（持久性高于emptyDir）
+
+## [持久卷 PersistentVolume (PV) & 持久卷申领 PersistentVolumeClaim (PVC）](https://kubernetes.io/zh-cn/docs/concepts/storage/persistent-volumes/)
+
+emptyDir 和 hostPath 都依赖于 K8s；而 PV和 PVC 是与集群分离的，数据被持久化后，即使 K8s 崩溃也不会受损。
+
+- PV 持久卷: 是外部存储系统中的一块存储空间，由管理员创建和维护。具有持久性，生命周期独立于Pod
+- PVC 持久卷申领
+    - 对PV的申请（claim），通常由普通用户创建和维护
+    - 需要Pod分配存储资源时，用户可以创建PVC，并指明存储资源的容量大小和访问模式，K8s 会查找并提供满足条件的PV
 
 # Day 22 - 20240810
 
