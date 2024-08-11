@@ -7,6 +7,28 @@
 * [Kubernetes Contributor Cheat Sheet](https://github.com/kubernetes/community/tree/master/contributors/guide/contributor-cheatsheet)
 * [Your First Contribution](https://github.com/kubernetes/community/blob/master/contributors/guide/first-contribution.md)
 
+
+# Day 23 - 20240811
+
+* 《每天5分钟玩转Kubernetes》 3h 
+
+## Kubernetes 健康检查 (Health Check) 功能
+
+自愈能力是 k8s 的重要特性，默认实现方式是自动重启发生故障的容器。
+
+健康检查的两种机制：
+
+- Liveness 探测（livenessProbe）：用户可自定义判断容器是否健康的条件（是否正常运行），探测失败则重启容器
+
+    Indicates whether the container is running. 
+
+- Readiness 探测（readinessProbe）：告诉 k8s 何时可以将容器加到 Service 负载均衡池中，对外提供服务
+
+    Indicates whether the container is ready to respond to requests. 
+
+## 
+
+
 # Day 22 - 20240810
 
 * 《每天5分钟玩转Kubernetes》 3h 
