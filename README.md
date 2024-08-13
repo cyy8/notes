@@ -8,12 +8,49 @@
 * [Your First Contribution](https://github.com/kubernetes/community/blob/master/contributors/guide/first-contribution.md)
 
 
+# Day 25 - 20240813
+
+- 泛读《Go语言 从入门到项目实战》 2.5h
+
+Chapter 1-3，目前读下来可理解85%左右，新手友好，正文里稍微有不懂的地方后面会有注释解释，比之前的 Head first Go 清晰易懂
+
+- 中式英语之鉴 1.5h
+
+- Linux基金会了解
+
+- k8s文档学习
+
+
+
+
+
+# Day 24 - 20240812
+
+- 周一图书馆闭馆，在家休息；看k8s文档考古
+
 # Day 23 - 20240811
 
 * 《每天5分钟玩转Kubernetes》 2.5h 
 * [Open Source Technical Documentation Essentials (LFC111)](https://trainingportal.linuxfoundation.org/courses/open-source-technical-documentation-essentials-lfc111) 1h
 
-## Kubernetes 健康检查 (Health Check) 功能
+## Open Source Technical Documentation Essentials (LFC111) 
+
+### A technical writer needs to
+
+- Focus on the user viewpoint
+- Present the information that specific types of users need to perform specific tasks
+- Balance the factual information that users need to perform tasks with the conceptual information they need to understand when and how to perform those tasks
+
+### Identifying the audience and their needs
+Each document and each section in each document should make clear：
+- Who is the intended audience for the information
+- What background they are expected to have
+- Where they can go to get that background
+- How to expect the to use the information
+
+## 《每天5分钟玩转Kubernetes》  
+
+### Kubernetes 健康检查 (Health Check) 功能
 
 自愈能力是 k8s 的重要特性，默认实现方式是自动重启发生故障的容器。
 
@@ -27,7 +64,7 @@
 
     Indicates whether the container is ready to respond to requests. 
 
-## Secret & ConfigMap
+### Secret & ConfigMap
 
 向 Pod 传递配置信息时，如果是敏感信息，可使用Secret；一般配置信息，则使用ConfigMap。  
 容器可以通过文件或环境变量的方式使用这些数据。
@@ -39,7 +76,7 @@
 
 - Configmap：以明文方式存放非敏感数据
 
-## Kubernetes 存储 - 卷 Volume
+### Kubernetes 存储 - 卷 Volume
 
 - why need Volume
     - 容器和Pod生命周期短，会被频繁销毁和创建，销毁时容器内部数据会被清除
@@ -53,7 +90,7 @@
     - Host 系统中存在的目录，mount给Pod的容器
     - Pod被销毁，hostPath 对应的目录还是会保留（持久性高于emptyDir）
 
-## [持久卷 PersistentVolume (PV) & 持久卷申领 PersistentVolumeClaim (PVC）](https://kubernetes.io/zh-cn/docs/concepts/storage/persistent-volumes/)
+### [持久卷 PersistentVolume (PV) & 持久卷申领 PersistentVolumeClaim (PVC）](https://kubernetes.io/zh-cn/docs/concepts/storage/persistent-volumes/)
 
 emptyDir 和 hostPath 都依赖于 K8s；而 PV和 PVC 是与集群分离的，数据被持久化后，即使 K8s 崩溃也不会受损。
 
@@ -239,7 +276,6 @@ spec:                   # Specification 该 Deployment 的 规格说明
 ### 滚动更新Rolling update 
 
 
-
 # Day 21 - 20240809
 
 * 《中式英语之鉴 》3h
@@ -274,7 +310,6 @@ https://github.com/kubernetes/website/pull/47399
 >It looks like this is your first PR to kubernetes/website 🎉.  
 >…  
 >Thank you, and welcome to Kubernetes. 
-
 
 
 # Day 20 - 20240808
