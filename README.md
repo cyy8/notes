@@ -8,6 +8,19 @@
 * [Your First Contribution](https://github.com/kubernetes/community/blob/master/contributors/guide/first-contribution.md)
 
 
+
+# Day 25 - 20240814
+
+- 泛读《Go语言 从入门到项目实战》 2h
+- 中式英语之鉴 
+
+## 《Go语言 从入门到项目实战》 
+
+- Chapter 4 流程控制语法 *冒泡排序
+- Chapter 5 函数  *函数调用、闭包及以后
+- Chapter 6 结构体 *方法与接收者
+
+
 # Day 25 - 20240813
 
 - 泛读《Go语言 从入门到项目实战》 2.5h
@@ -19,9 +32,6 @@ Chapter 1-3，目前读下来可理解85%左右，新手友好，正文里稍微
 - Linux基金会了解
 
 - k8s文档学习
-
-
-
 
 
 # Day 24 - 20240812
